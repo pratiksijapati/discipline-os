@@ -104,6 +104,12 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "core.pagination.StandardPagination",
     "PAGE_SIZE": 20,
     "EXCEPTION_HANDLER": "core.exceptions.api_exception_handler",
+    # Only views that set `throttle_scope` are limited (login, register, refresh…).
+    "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.ScopedRateThrottle"],
+    "DEFAULT_THROTTLE_RATES": {
+        "auth": "20/min",
+        "auth_refresh": "60/min",
+    },
 }
 
 SIMPLE_JWT = {

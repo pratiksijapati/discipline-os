@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
@@ -13,6 +14,10 @@ def normalize_login_email(email: str) -> str:
 
 class UserManager(BaseUserManager):
     use_in_migrations = True
+
+    def get_by_natural_key(self, email):
+        # Login is case-insensitive because emails are always stored lowercase.
+        return self.get(**{self.model.USERNAME_FIELD: normalize_login_email(email)})
 
     def _create_user(self, email, password, **extra_fields):
         if not email:
@@ -68,3 +73,36 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
 
     def get_short_name(self):
         return self.first_name
+
+
+class UserSettings(TimeStampedModel):
+    """
+    Per-user preferences. Created automatically the first time they are read.
+    More fields (wake-up time, scoring weights, workout target…) are added in their phases.
+    """
+
+    class Theme(models.TextChoices):
+        LIGHT = "light", "Light"
+        DARK = "dark", "Dark"
+        SYSTEM = "system", "System"
+
+    class WeekStart(models.IntegerChoices):
+        # Matches Python's date.weekday(): Monday=0 … Sunday=6
+        MONDAY = 0, "Monday"
+        SUNDAY = 6, "Sunday"
+
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="settings")
+    theme = models.CharField(max_length=10, choices=Theme.choices, default=Theme.SYSTEM)
+    week_start = models.PositiveSmallIntegerField(choices=WeekStart.choices, default=WeekStart.SUNDAY)
+
+    class Meta:
+        verbose_name = "user settings"
+        verbose_name_plural = "user settings"
+
+    def __str__(self):
+        return f"Settings for {self.user}"
+
+    @classmethod
+    def for_user(cls, user) -> "UserSettings":
+        obj, _ = cls.objects.get_or_create(user=user)
+        return obj

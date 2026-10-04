@@ -1,0 +1,5 @@
+# Store text files with LF line endings (the deployment servers run Linux).
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.ico binary
