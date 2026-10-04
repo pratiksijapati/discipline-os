@@ -39,6 +39,9 @@ INSTALLED_APPS = [
     # Local
     "core",
     "users",
+    "planner",
+    "tasks",
+    "discipline",
 ]
 
 MIDDLEWARE = [
