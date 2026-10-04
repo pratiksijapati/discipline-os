@@ -28,4 +28,6 @@ export const queryKeys = {
   reviewHistory: ["reflections", "history"] as const,
   progress: (range: string) => ["progress", range] as const,
   weekly: (offset: number) => ["progress", "weekly", offset] as const,
+  pushConfig: ["notifications", "config"] as const,
+  notificationPreferences: ["notifications", "preferences"] as const,
 };

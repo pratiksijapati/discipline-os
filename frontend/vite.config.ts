@@ -43,6 +43,8 @@ export default defineConfig({
         navigateFallback: "/index.html",
         navigateFallbackDenylist: [/^\/api\//, /^\/admin\//],
         cleanupOutdatedCaches: true,
+        // Push notifications: show reminders and open the right page when tapped.
+        importScripts: ["push-handler.js"],
       },
       devOptions: { enabled: false },
     }),

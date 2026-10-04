@@ -30,7 +30,19 @@ interface FormValues {
   notes: string;
   repeat: RepeatChoice;
   days_of_week: number[];
+  /** "" = no reminder, otherwise minutes before the start. */
+  reminder: string;
 }
+
+const REMINDER_OPTIONS = [
+  { value: "", label: "No reminder" },
+  { value: "0", label: "At start time" },
+  { value: "5", label: "5 min before" },
+  { value: "10", label: "10 min before" },
+  { value: "15", label: "15 min before" },
+  { value: "30", label: "30 min before" },
+  { value: "60", label: "1 hour before" },
+];
 
 function initialValues(mode: ScheduleFormMode): FormValues {
   if (mode.kind === "create") {
@@ -44,6 +56,7 @@ function initialValues(mode: ScheduleFormMode): FormValues {
       notes: "",
       repeat: "never",
       days_of_week: [],
+      reminder: "",
     };
   }
   const source = mode.kind === "item" ? mode.item : mode.template;
@@ -57,6 +70,7 @@ function initialValues(mode: ScheduleFormMode): FormValues {
     notes: source.notes,
     repeat: mode.kind === "template" ? mode.template.repeat : "never",
     days_of_week: mode.kind === "template" ? mode.template.days_of_week : [],
+    reminder: source.reminder_minutes === null ? "" : String(source.reminder_minutes),
   };
 }
 
@@ -113,6 +127,7 @@ export function ScheduleForm({ mode, weekStart, onSaved }: ScheduleFormProps) {
       category: values.category,
       priority: values.priority,
       notes: values.notes,
+      reminder_minutes: values.reminder === "" ? null : Number(values.reminder),
     };
     const rule = {
       repeat: values.repeat === "never" ? "daily" : values.repeat,
@@ -171,6 +186,15 @@ export function ScheduleForm({ mode, weekStart, onSaved }: ScheduleFormProps) {
           error={errors.end_time}
         />
       </div>
+
+      <SelectField
+        label="Reminder"
+        value={values.reminder}
+        onChange={(e) => set("reminder", e.target.value)}
+        options={REMINDER_OPTIONS}
+        error={errors.reminder_minutes}
+        hint={values.reminder !== "" ? "Turn on reminders in Settings to receive it." : undefined}
+      />
 
       {mode.kind !== "item" && (
         <SelectField

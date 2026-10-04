@@ -7,6 +7,7 @@ import { Card } from "../components/ui/Card";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { AppearanceSection } from "../modules/settings/components/AppearanceSection";
 import { ChangePasswordForm } from "../modules/settings/components/ChangePasswordForm";
+import { NotificationSettings } from "../modules/notifications/components/NotificationSettings";
 import { DisciplineSettingsForm } from "../modules/settings/components/DisciplineSettingsForm";
 import { PreferencesForm } from "../modules/settings/components/PreferencesForm";
 import { ProfileForm } from "../modules/settings/components/ProfileForm";
@@ -52,6 +53,14 @@ export function SettingsPage() {
             Parts you haven't set up never count against you. Past days keep the score they had.
           </p>
           <DisciplineSettingsForm />
+        </Card>
+
+        <Card aria-labelledby="settings-reminders">
+          <h2 id="settings-reminders" className={styles.sectionTitle}>
+            Reminders
+          </h2>
+          <p className={styles.sectionHint}>Gentle nudges at the right moment — choose which ones you want.</p>
+          <NotificationSettings />
         </Card>
 
         <Card aria-labelledby="settings-app">
