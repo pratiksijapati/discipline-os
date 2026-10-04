@@ -1,0 +1,24 @@
+.ring {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.track {
+  fill: none;
+  stroke: var(--surface-3);
+}
+
+.bar {
+  fill: none;
+  stroke: var(--accent);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 600ms ease;
+}
+
+.center {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  text-align: center;
+}

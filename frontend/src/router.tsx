@@ -1,10 +1,10 @@
-import { ChartLine, CalendarClock, Dumbbell, ListChecks, NotebookPen, Target } from "lucide-react";
+import { ChartLine, Dumbbell, ListChecks, NotebookPen, Target } from "lucide-react";
 import { createBrowserRouter, Navigate } from "react-router";
 import { RedirectIfAuthenticated, RequireAuth } from "./auth/routeGuards";
 import { AppShell } from "./layouts/AppShell";
 import { LoginPage } from "./pages/auth/LoginPage";
 import { RegisterPage } from "./pages/auth/RegisterPage";
-import { ComingSoonPage, MorePage, SettingsPage, TodayPage } from "./pages/lazyPages";
+import { ComingSoonPage, MorePage, SchedulePage, SettingsPage, TasksPage, TodayPage } from "./pages/lazyPages";
 import { NotFoundPage } from "./pages/NotFoundPage";
 
 export const router = createBrowserRouter([
@@ -23,16 +23,8 @@ export const router = createBrowserRouter([
         children: [
           { path: "/", element: <Navigate to="/today" replace /> },
           { path: "/today", element: <TodayPage /> },
-          {
-            path: "/schedule",
-            element: (
-              <ComingSoonPage
-                title="My Day"
-                icon={CalendarClock}
-                description="Your timeline, recurring routine and morning routine — coming with the Today system."
-              />
-            ),
-          },
+          { path: "/schedule", element: <SchedulePage /> },
+          { path: "/tasks", element: <TasksPage /> },
           {
             path: "/workout",
             element: (

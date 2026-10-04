@@ -1,4 +1,10 @@
-import { useId, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes } from "react";
+import {
+  useId,
+  type InputHTMLAttributes,
+  type ReactNode,
+  type SelectHTMLAttributes,
+  type TextareaHTMLAttributes,
+} from "react";
 import { cn } from "../../utils/cn";
 import styles from "./Field.module.css";
 
@@ -65,6 +71,31 @@ export function TextField({ label, hint, error, optional, id, className, ...inpu
         aria-invalid={errors.length > 0 || undefined}
         aria-describedby={describedBy(fieldId, Boolean(hint), errors.length > 0)}
         {...inputProps}
+      />
+    </FieldShell>
+  );
+}
+
+interface TextAreaFieldProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+  label: string;
+  hint?: ReactNode;
+  error?: string | string[];
+  optional?: boolean;
+}
+
+export function TextAreaField({ label, hint, error, optional, id, className, ...textareaProps }: TextAreaFieldProps) {
+  const autoId = useId();
+  const fieldId = id ?? autoId;
+  const errors = toList(error);
+  return (
+    <FieldShell id={fieldId} label={label} hint={hint} errors={errors} optional={optional} className={className}>
+      <textarea
+        id={fieldId}
+        className={cn(styles.control, styles.textarea)}
+        rows={3}
+        aria-invalid={errors.length > 0 || undefined}
+        aria-describedby={describedBy(fieldId, Boolean(hint), errors.length > 0)}
+        {...textareaProps}
       />
     </FieldShell>
   );

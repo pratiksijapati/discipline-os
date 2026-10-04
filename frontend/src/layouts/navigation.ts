@@ -5,6 +5,7 @@ import {
   ListChecks,
   NotebookPen,
   Settings,
+  SquareCheckBig,
   Sunrise,
   Target,
   type LucideIcon,
@@ -26,6 +27,7 @@ export const PRIMARY_NAV: NavItem[] = [
 
 /** Under "More" on mobile; listed below the primary items on desktop. */
 export const SECONDARY_NAV: NavItem[] = [
+  { to: "/tasks", label: "Tasks", icon: SquareCheckBig },
   { to: "/growth", label: "Goals", icon: Target },
   { to: "/progress", label: "Progress", icon: ChartLine },
   { to: "/reflection", label: "Reflection", icon: NotebookPen },

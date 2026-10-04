@@ -1,0 +1,132 @@
+.timeline {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 64px 18px 1fr;
+  align-items: stretch;
+}
+
+.time {
+  padding-top: 15px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.rail {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+/* the vertical line */
+.rail::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border);
+}
+
+.row:first-child .rail::before {
+  top: 22px;
+}
+
+.row:last-child .rail::before {
+  bottom: calc(100% - 22px);
+}
+
+.dot {
+  position: relative;
+  width: 12px;
+  height: 12px;
+  margin-top: 17px;
+  border: 2px solid var(--border-strong);
+  border-radius: 50%;
+  background: var(--bg);
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 0;
+  margin: 0 0 var(--space-2) var(--space-2);
+  padding-left: var(--space-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+  min-height: var(--tap-lg);
+  padding: var(--space-2) 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.title {
+  max-width: 100%;
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* ---------- states ---------- */
+
+.completed .dot {
+  border-color: var(--success);
+  background: var(--success);
+}
+
+.completed .title {
+  color: var(--text-muted);
+  text-decoration: line-through;
+  text-decoration-color: var(--text-subtle);
+}
+
+.skipped .title {
+  color: var(--text-subtle);
+}
+
+.missed .dot {
+  border-color: var(--danger);
+}
+
+.in_progress .dot,
+.current .dot {
+  border-color: var(--accent);
+  background: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+.current .card,
+.in_progress .card {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}

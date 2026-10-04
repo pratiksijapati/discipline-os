@@ -26,8 +26,9 @@
   width: 100%;
   max-width: var(--content-max);
   margin: 0 auto;
+  /* Bottom: tab bar + room for the floating + button, so it never hides the last row. */
   padding: calc(var(--space-6) + env(safe-area-inset-top)) var(--space-4)
-    calc(var(--bottom-nav-h) + env(safe-area-inset-bottom) + var(--space-8));
+    calc(var(--bottom-nav-h) + env(safe-area-inset-bottom) + 88px);
 }
 
 .bottomNav {
@@ -87,7 +88,7 @@
 
   .main {
     max-width: calc(var(--content-max) + 2 * var(--space-10));
-    padding: var(--space-10);
+    padding: var(--space-10) var(--space-10) 120px;
   }
 }
 

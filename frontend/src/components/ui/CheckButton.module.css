@@ -1,0 +1,54 @@
+.hit {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: var(--tap);
+  height: var(--tap);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.hit:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.circle {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 2px solid var(--border-strong);
+  border-radius: 50%;
+  color: var(--on-accent);
+  transition:
+    background-color var(--transition),
+    border-color var(--transition),
+    transform var(--transition);
+}
+
+.hit:hover .circle {
+  border-color: var(--accent);
+}
+
+.hit:active .circle {
+  transform: scale(0.9);
+}
+
+.checked {
+  background: var(--success);
+  border-color: var(--success);
+  animation: pop 220ms ease-out;
+}
+
+[data-theme="dark"] .checked {
+  color: #052e14;
+}
+
+@keyframes pop {
+  50% {
+    transform: scale(1.15);
+  }
+}
