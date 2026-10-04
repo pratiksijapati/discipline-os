@@ -11,7 +11,7 @@ function encouragement(progress: number, total: number): string {
 }
 
 export function ProgressCard({ summary }: { summary: TodaySummary }) {
-  const total = summary.schedule.total + summary.tasks.total;
+  const total = summary.schedule.total + summary.tasks.total + summary.habits.total;
   return (
     <section className={styles.card} aria-labelledby="progress-heading">
       <ProgressRing value={summary.progress} label={`Today's progress: ${summary.progress} percent`}>
@@ -38,6 +38,14 @@ export function ProgressCard({ summary }: { summary: TodaySummary }) {
               {summary.tasks.completed}/{summary.tasks.total}
             </dd>
           </div>
+          {summary.habits.total > 0 && (
+            <div>
+              <dt>Habits</dt>
+              <dd>
+                {summary.habits.completed}/{summary.habits.total}
+              </dd>
+            </div>
+          )}
           {summary.schedule.missed > 0 && (
             <div>
               <dt>Missed</dt>

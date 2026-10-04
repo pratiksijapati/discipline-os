@@ -54,6 +54,10 @@ def _summarize(items, tasks, habit_cards, routine, today, now_time) -> dict:
 
     done = sched_done + task_done + habit_done
     total = sched_total + task_total + len(due_habits)
+    if routine["total"]:
+        # The routine counts as one item, with partial credit per step ticked.
+        done += routine["completed"] / routine["total"]
+        total += 1
     return {
         "schedule": {"completed": sched_done, "total": sched_total, "missed": statuses.count(MISSED)},
         "tasks": {

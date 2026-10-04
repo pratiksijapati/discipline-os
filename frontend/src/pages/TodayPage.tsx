@@ -1,6 +1,6 @@
 import { CalendarPlus } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useCurrentUser } from "../auth/useAuth";
 import { LoadError } from "../components/LoadError";
 import { PageHeader } from "../components/PageHeader";
@@ -10,6 +10,9 @@ import { EmptyState } from "../components/ui/EmptyState";
 import { Fab } from "../components/ui/Fab";
 import { Sheet } from "../components/ui/Sheet";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
+import { HabitCard } from "../modules/habits/components/HabitCard";
+import habitStyles from "../modules/habits/components/HabitCard.module.css";
+import { RoutineChecklist } from "../modules/routine/components/RoutineChecklist";
 import { ScheduleItemDetails } from "../modules/schedule/components/ScheduleItemDetails";
 import { Timeline } from "../modules/schedule/components/Timeline";
 import { useSetItemStatus } from "../modules/schedule/hooks";
@@ -27,6 +30,7 @@ import styles from "./pages.module.css";
 export function TodayPage() {
   useDocumentTitle("Today");
   const user = useCurrentUser();
+  const navigate = useNavigate();
   const { data, isLoading, error, refetch } = useTodayDashboard();
   const setItemStatus = useSetItemStatus();
   const setTaskStatus = useSetTaskStatus();
@@ -85,6 +89,25 @@ export function TodayPage() {
             />
           )}
         </section>
+
+        <RoutineChecklist data={data.routine} />
+
+        {data.habits.length > 0 && (
+          <section aria-labelledby="habits-heading">
+            <SectionHeader id="habits-heading" title="Habits" action={<Link to="/habits">All habits</Link>} />
+            <ul className={habitStyles.list}>
+              {data.habits.map((habit) => (
+                <HabitCard
+                  key={habit.id}
+                  habit={habit}
+                  today={data.date}
+                  showWeek={false}
+                  onOpen={() => navigate("/habits")}
+                />
+              ))}
+            </ul>
+          </section>
+        )}
 
         <section aria-labelledby="tasks-heading">
           <SectionHeader id="tasks-heading" title="Tasks" action={<Link to="/tasks">All tasks</Link>} />

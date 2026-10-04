@@ -19,6 +19,13 @@
   margin-bottom: var(--space-5);
 }
 
+.summaryLine {
+  margin-bottom: var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
 .dayGroup + .dayGroup {
   margin-top: var(--space-6);
 }

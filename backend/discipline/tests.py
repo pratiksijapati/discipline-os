@@ -68,3 +68,28 @@ class TodayDashboardTests(AuthedAPITestCase):
             data = self.get()
         self.assertIsNone(data["current"])
         self.assertIsNone(data["next"])
+
+
+class DashboardHabitsAndRoutineTests(AuthedAPITestCase):
+    def test_habits_and_routine_count_toward_progress(self):
+        from habits.models import Habit, HabitLog
+        from planner.models import Routine, RoutineItem, RoutineLog
+
+        with frozen_local_time(2026, 10, 5, 8):
+            water = Habit.objects.create(
+                user=self.user, name="Water", habit_type="quantity", target_value=8, unit="glasses", start_date="2026-10-01"
+            )
+            Habit.objects.create(user=self.user, name="Read", start_date="2026-10-01")
+            HabitLog.objects.create(habit=water, user=self.user, date="2026-10-05", value=8)
+            routine = Routine.objects.create(user=self.user, name="Morning", is_default=True)
+            steps = [RoutineItem.objects.create(routine=routine, title=f"Step {i}", position=i) for i in range(4)]
+            RoutineLog.objects.create(item=steps[0], user=self.user, date="2026-10-05")
+            RoutineLog.objects.create(item=steps[1], user=self.user, date="2026-10-05")
+            data = self.client.get(reverse("dashboard-today")).data
+
+        self.assertEqual([h["name"] for h in data["habits"]], ["Water", "Read"])
+        self.assertEqual(data["summary"]["habits"], {"completed": 1, "total": 2})
+        self.assertEqual(data["summary"]["routine"], {"completed": 2, "total": 4})
+        self.assertEqual((data["routine"]["completed"], data["routine"]["total"]), (2, 4))
+        # 1 habit + half the routine, out of 2 habits + 1 routine = 1.5 / 3
+        self.assertEqual(data["summary"]["progress"], 50)

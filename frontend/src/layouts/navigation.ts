@@ -3,6 +3,7 @@ import {
   ChartLine,
   Dumbbell,
   ListChecks,
+  ListOrdered,
   NotebookPen,
   Settings,
   SquareCheckBig,
@@ -28,6 +29,7 @@ export const PRIMARY_NAV: NavItem[] = [
 /** Under "More" on mobile; listed below the primary items on desktop. */
 export const SECONDARY_NAV: NavItem[] = [
   { to: "/tasks", label: "Tasks", icon: SquareCheckBig },
+  { to: "/routine", label: "Morning routine", icon: ListOrdered },
   { to: "/growth", label: "Goals", icon: Target },
   { to: "/progress", label: "Progress", icon: ChartLine },
   { to: "/reflection", label: "Reflection", icon: NotebookPen },

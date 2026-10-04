@@ -8,4 +8,9 @@ export const queryKeys = {
   templates: ["schedule-templates"] as const,
   tasksAll: ["tasks"] as const,
   tasks: (view: TaskView) => ["tasks", view] as const,
+  habitsAll: ["habits"] as const,
+  habitsToday: ["habits", "today"] as const,
+  habitsList: ["habits", "list"] as const,
+  routineToday: ["routine", "today"] as const,
+  routines: ["routines"] as const,
 };

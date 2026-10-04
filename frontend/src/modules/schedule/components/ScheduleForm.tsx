@@ -12,7 +12,7 @@ import { toInputTime } from "../../../utils/time";
 import { CATEGORY_OPTIONS, REPEAT_OPTIONS } from "../constants";
 import { useCreateScheduleItem, useCreateTemplate, useUpdateScheduleItem, useUpdateTemplate } from "../hooks";
 import type { RepeatChoice, ScheduleCategory, ScheduleItem, ScheduleTemplate } from "../types";
-import { DayPicker } from "./DayPicker";
+import { DayPicker } from "../../../components/ui/DayPicker";
 import styles from "./ScheduleForm.module.css";
 
 export type ScheduleFormMode =

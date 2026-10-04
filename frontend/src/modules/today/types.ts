@@ -1,9 +1,18 @@
+import type { HabitCard } from "../habits/types";
+import type { RoutineToday } from "../routine/types";
 import type { ScheduleItem } from "../schedule/types";
 import type { Task } from "../tasks/types";
 
+interface Count {
+  completed: number;
+  total: number;
+}
+
 export interface TodaySummary {
-  schedule: { completed: number; total: number; missed: number };
-  tasks: { completed: number; total: number; overdue: number };
+  schedule: Count & { missed: number };
+  tasks: Count & { overdue: number };
+  habits: Count;
+  routine: Count;
   /** Simple completion % until the Discipline Score arrives. */
   progress: number;
 }
@@ -16,5 +25,8 @@ export interface TodayDashboard {
   next: ScheduleItem | null;
   schedule: ScheduleItem[];
   tasks: Task[];
+  /** Habits due today, or already done today. */
+  habits: HabitCard[];
+  routine: RoutineToday;
   summary: TodaySummary;
 }

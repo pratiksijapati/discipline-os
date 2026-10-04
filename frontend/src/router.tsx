@@ -1,10 +1,19 @@
-import { ChartLine, Dumbbell, ListChecks, NotebookPen, Target } from "lucide-react";
+import { ChartLine, Dumbbell, NotebookPen, Target } from "lucide-react";
 import { createBrowserRouter, Navigate } from "react-router";
 import { RedirectIfAuthenticated, RequireAuth } from "./auth/routeGuards";
 import { AppShell } from "./layouts/AppShell";
 import { LoginPage } from "./pages/auth/LoginPage";
 import { RegisterPage } from "./pages/auth/RegisterPage";
-import { ComingSoonPage, MorePage, SchedulePage, SettingsPage, TasksPage, TodayPage } from "./pages/lazyPages";
+import {
+  ComingSoonPage,
+  HabitsPage,
+  MorePage,
+  RoutinePage,
+  SchedulePage,
+  SettingsPage,
+  TasksPage,
+  TodayPage,
+} from "./pages/lazyPages";
 import { NotFoundPage } from "./pages/NotFoundPage";
 
 export const router = createBrowserRouter([
@@ -35,16 +44,8 @@ export const router = createBrowserRouter([
               />
             ),
           },
-          {
-            path: "/habits",
-            element: (
-              <ComingSoonPage
-                title="Habits"
-                icon={ListChecks}
-                description="Tap-to-track habits with counts and durations are on the way."
-              />
-            ),
-          },
+          { path: "/habits", element: <HabitsPage /> },
+          { path: "/routine", element: <RoutinePage /> },
           {
             path: "/growth",
             element: (

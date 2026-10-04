@@ -1,0 +1,268 @@
+/* ---------- Today checklist card ---------- */
+
+.card {
+  padding: var(--space-4) var(--space-4) var(--space-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.complete {
+  border-color: color-mix(in srgb, var(--success) 45%, var(--border));
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.toggle {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--tap);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
+.toggle:not(:disabled) {
+  cursor: pointer;
+}
+
+.title {
+  font-size: var(--text-md);
+}
+
+.count {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--accent-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+.complete .count {
+  color: var(--success);
+}
+
+.chevron {
+  color: var(--text-muted);
+  transition: transform var(--transition);
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.edit {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  padding: 0 var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.bar {
+  height: 6px;
+  margin: var(--space-1) 0 var(--space-2);
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: var(--surface-3);
+}
+
+.bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width 300ms ease;
+}
+
+.complete .bar span {
+  background: var(--success);
+}
+
+.steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-left: calc(-1 * var(--space-2));
+}
+
+.stepTitle {
+  flex: 1;
+}
+
+.stepDone .stepTitle {
+  color: var(--text-muted);
+  text-decoration: line-through;
+  text-decoration-color: var(--text-subtle);
+}
+
+.stepMeta {
+  font-size: var(--text-sm);
+  color: var(--text-subtle);
+}
+
+.setup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  color: var(--accent-strong);
+  text-decoration: none;
+}
+
+.setup > span {
+  display: flex;
+  flex-direction: column;
+}
+
+.setup strong {
+  color: var(--text);
+}
+
+.setup span span {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+/* ---------- Editor ---------- */
+
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.editorHint {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.editList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.editRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 60px;
+  padding: 0 var(--space-1) 0 var(--space-1);
+}
+
+.editRow + .editRow {
+  border-top: 1px solid var(--border);
+}
+
+.disabledRow .stepName {
+  color: var(--text-subtle);
+}
+
+.order {
+  display: flex;
+  flex-direction: column;
+}
+
+.order button {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 26px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.order button:disabled {
+  color: var(--border-strong);
+  cursor: default;
+}
+
+.order button:hover:not(:disabled) {
+  background: var(--surface-2);
+}
+
+.stepName {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  min-height: var(--tap);
+  padding: 0 var(--space-2);
+  border: 0;
+  background: transparent;
+  font-weight: 500;
+  text-align: left;
+  cursor: text;
+}
+
+.stepName svg {
+  flex-shrink: 0;
+  color: var(--text-subtle);
+}
+
+.inlineInput {
+  flex: 1;
+  min-width: 0;
+  min-height: var(--tap);
+  padding: 0 var(--space-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  font-size: var(--text-md);
+}
+
+.inlineInput:focus {
+  outline: none;
+  border-color: var(--accent-strong);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.iconButton {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: var(--tap);
+  height: var(--tap);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.iconButton:hover {
+  background: var(--surface-2);
+  color: var(--danger);
+}
+
+.addRow {
+  display: flex;
+  gap: var(--space-2);
+}
