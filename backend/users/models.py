@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 from core.models import TimeStampedModel
@@ -94,6 +95,9 @@ class UserSettings(TimeStampedModel):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="settings")
     theme = models.CharField(max_length=10, choices=Theme.choices, default=Theme.SYSTEM)
     week_start = models.PositiveSmallIntegerField(choices=WeekStart.choices, default=WeekStart.SUNDAY)
+    weekly_workout_target = models.PositiveSmallIntegerField(
+        default=4, validators=[MinValueValidator(1), MaxValueValidator(14)]
+    )
 
     class Meta:
         verbose_name = "user settings"

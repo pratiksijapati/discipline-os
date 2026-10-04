@@ -8,7 +8,7 @@ from .models import User, UserSettings, normalize_login_email
 class UserSettingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserSettings
-        fields = ("theme", "week_start", "updated_at")
+        fields = ("theme", "week_start", "weekly_workout_target", "updated_at")
         read_only_fields = ("updated_at",)
 
 

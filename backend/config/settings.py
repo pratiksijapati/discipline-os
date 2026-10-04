@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "planner",
     "tasks",
     "habits",
+    "workouts",
     "discipline",
 ]
 
@@ -108,6 +109,8 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "core.pagination.StandardPagination",
     "PAGE_SIZE": 20,
     "EXCEPTION_HANDLER": "core.exceptions.api_exception_handler",
+    # Send decimals (e.g. weight_kg) as JSON numbers, not strings.
+    "COERCE_DECIMAL_TO_STRING": False,
     # Only views that set `throttle_scope` are limited (login, register, refresh…).
     "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.ScopedRateThrottle"],
     "DEFAULT_THROTTLE_RATES": {

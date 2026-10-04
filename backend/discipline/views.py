@@ -31,6 +31,7 @@ class TodayDashboardView(APIView):
                     serialize_card(card, context) for card in snap.habit_cards if card["due_today"] or card["completed"]
                 ],
                 "routine": snap.routine,
+                "workout": snap.workout,
                 "summary": snap.summary,
             }
         )

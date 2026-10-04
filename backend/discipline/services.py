@@ -15,6 +15,7 @@ from planner.services import ensure_occurrences
 from planner.status import MISSED, display_status, is_happening_now
 from tasks.models import Task
 from tasks.selectors import today_tasks, with_display_order
+from workouts.services import workout_today
 
 
 @dataclass
@@ -26,6 +27,7 @@ class TodaySnapshot:
     tasks: list[Task]
     habit_cards: list[dict]
     routine: dict
+    workout: dict
     current: ScheduleItem | None
     next: ScheduleItem | None
     summary: dict
@@ -92,6 +94,7 @@ def build_today(user) -> TodaySnapshot:
         tasks=tasks,
         habit_cards=habit_cards,
         routine=routine,
+        workout=workout_today(user, today),
         current=current,
         next=upcoming,
         summary=_summarize(items, tasks, habit_cards, routine, today, now_time),
