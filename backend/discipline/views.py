@@ -1,6 +1,8 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from goals.models import Goal
+from goals.serializers import GoalSerializer
 from habits.serializers import serialize_card
 from planner.serializers import ScheduleItemSerializer
 from tasks.serializers import TaskSerializer
@@ -32,6 +34,11 @@ class TodayDashboardView(APIView):
                 ],
                 "routine": snap.routine,
                 "workout": snap.workout,
+                "main_goal": (
+                    GoalSerializer(main_goal, context=context).data
+                    if (main_goal := Goal.objects.filter(user=request.user, is_main=True).first())
+                    else None
+                ),
                 "summary": snap.summary,
             }
         )

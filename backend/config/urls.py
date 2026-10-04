@@ -13,5 +13,6 @@ urlpatterns = [
     path("api/", include("tasks.urls")),
     path("api/", include("habits.urls")),
     path("api/", include("workouts.urls")),
+    path("api/", include("goals.urls")),
     path("api/", include("discipline.urls")),
 ]
