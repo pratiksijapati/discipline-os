@@ -11,5 +11,6 @@ urlpatterns = [
     path("api/settings/", UserSettingsView.as_view(), name="user-settings"),
     path("api/", include("planner.urls")),
     path("api/", include("tasks.urls")),
+    path("api/", include("habits.urls")),
     path("api/", include("discipline.urls")),
 ]

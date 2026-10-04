@@ -1,6 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from habits.serializers import serialize_card
 from planner.serializers import ScheduleItemSerializer
 from tasks.serializers import TaskSerializer
 
@@ -25,6 +26,11 @@ class TodayDashboardView(APIView):
                 "next": item(snap.next),
                 "schedule": ScheduleItemSerializer(snap.schedule, many=True, context=context).data,
                 "tasks": TaskSerializer(snap.tasks, many=True, context=context).data,
+                # Habits that matter today: due today, or already done today.
+                "habits": [
+                    serialize_card(card, context) for card in snap.habit_cards if card["due_today"] or card["completed"]
+                ],
+                "routine": snap.routine,
                 "summary": snap.summary,
             }
         )

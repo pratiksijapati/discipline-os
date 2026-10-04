@@ -1,6 +1,17 @@
 from django.contrib import admin
 
-from .models import ScheduleItem, ScheduleTemplate
+from .models import Routine, RoutineItem, ScheduleItem, ScheduleTemplate
+
+
+class RoutineItemInline(admin.TabularInline):
+    model = RoutineItem
+    extra = 0
+
+
+@admin.register(Routine)
+class RoutineAdmin(admin.ModelAdmin):
+    list_display = ("name", "user", "is_default", "is_active")
+    inlines = [RoutineItemInline]
 
 
 @admin.register(ScheduleTemplate)

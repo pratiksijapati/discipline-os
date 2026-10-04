@@ -4,7 +4,7 @@ from django.urls import reverse
 
 from core.testing import AuthedAPITestCase, frozen_local_time
 
-from .models import ScheduleItem, ScheduleTemplate
+from .models import Routine, RoutineItem, ScheduleItem, ScheduleTemplate
 from .services import ensure_occurrences
 
 # 2026-10-05 is a Monday.
@@ -145,3 +145,68 @@ class ScheduleApiTests(AuthedAPITestCase):
     def test_range_limit(self):
         res = self.client.get(reverse("schedule-item-list"), {"start": "2026-01-01", "end": "2026-12-31"})
         self.assertEqual(res.status_code, 400)
+
+
+class RoutineApiTests(AuthedAPITestCase):
+    SUGGESTED = ["Wake up", "Drink water", "Brush / wash", "Dance challenge", "Workout", "Shower", "Breakfast"]
+
+    def create_routine(self, name="Morning routine", **extra):
+        payload = {"name": name, "items": [{"title": t} for t in self.SUGGESTED], **extra}
+        res = self.client.post(reverse("routine-list"), payload, format="json")
+        self.assertEqual(res.status_code, 201, res.data)
+        return res.data
+
+    def today(self):
+        return self.client.get(reverse("routine-today")).data
+
+    def test_first_routine_becomes_default_with_ordered_items(self):
+        routine = self.create_routine()
+        today = self.today()
+        self.assertEqual(today["routine"]["id"], routine["id"])
+        self.assertTrue(today["routine"]["is_default"])
+        self.assertEqual([i["title"] for i in today["items"]], self.SUGGESTED)
+        self.assertEqual((today["completed"], today["total"]), (0, 7))
+
+    def test_only_one_default(self):
+        first = self.create_routine()
+        second = self.create_routine(name="Night routine", is_default=True)
+        self.assertEqual(self.today()["routine"]["id"], second["id"])
+        self.client.patch(reverse("routine-detail", args=[first["id"]]), {"is_default": True}, format="json")
+        self.assertEqual(self.today()["routine"]["id"], first["id"])
+        self.assertEqual(Routine.objects.filter(user=self.user, is_default=True).count(), 1)
+
+    def test_check_is_idempotent_and_disabled_items_dont_count(self):
+        self.create_routine()
+        items = self.today()["items"]
+        url = reverse("routine-item-check", args=[items[0]["id"]])
+        self.client.post(url, {"done": True}, format="json")
+        res = self.client.post(url, {"done": True}, format="json")
+        self.assertEqual(res.data["completed"], 1)
+        self.client.patch(reverse("routine-item-detail", args=[items[6]["id"]]), {"is_enabled": False}, format="json")
+        self.assertEqual(self.today()["total"], 6)
+        res = self.client.post(url, {"done": False}, format="json")
+        self.assertEqual(res.data["completed"], 0)
+
+    def test_reorder_and_add_item(self):
+        routine = self.create_routine()
+        ids = [i["id"] for i in routine["items"]]
+        res = self.client.post(reverse("routine-reorder", args=[routine["id"]]), {"item_ids": ids[::-1]}, format="json")
+        self.assertEqual(res.data["items"][0]["title"], "Breakfast")
+        res = self.client.post(reverse("routine-item-list"), {"routine": routine["id"], "title": "Stretch"}, format="json")
+        self.assertEqual(res.status_code, 201)
+        self.assertEqual(self.today()["items"][-1]["title"], "Stretch")
+
+    def test_deleting_default_promotes_another(self):
+        first = self.create_routine()
+        second = self.create_routine(name="Night routine")
+        self.client.delete(reverse("routine-detail", args=[first["id"]]))
+        self.assertEqual(self.today()["routine"]["id"], second["id"])
+
+    def test_ownership(self):
+        foreign = Routine.objects.create(user=self.other, name="Theirs")
+        foreign_item = RoutineItem.objects.create(routine=foreign, title="Secret")
+        res = self.client.post(reverse("routine-item-list"), {"routine": foreign.id, "title": "Sneaky"}, format="json")
+        self.assertEqual(res.status_code, 400)
+        self.assertEqual(self.client.post(reverse("routine-item-check", args=[foreign_item.id]), {"done": True}, format="json").status_code, 404)
+        self.assertEqual(self.client.get(reverse("routine-detail", args=[foreign.id])).status_code, 404)
+        self.assertIsNone(self.today()["routine"])

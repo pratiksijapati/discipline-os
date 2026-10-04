@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "users",
     "planner",
     "tasks",
+    "habits",
     "discipline",
 ]
 

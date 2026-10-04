@@ -134,3 +134,48 @@ class ScheduleItem(ScheduleFields):
 
     def __str__(self):
         return f"{self.date} {self.start_time:%H:%M} {self.title}"
+
+
+class Routine(TimeStampedModel):
+    """An ordered checklist, e.g. the morning routine. One routine is the default."""
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="routines")
+    name = models.CharField(max_length=80)
+    is_default = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["-is_default", "id"]
+        constraints = [
+            models.UniqueConstraint(fields=["user"], condition=Q(is_default=True), name="one_default_routine_per_user")
+        ]
+
+    def __str__(self):
+        return self.name
+
+
+class RoutineItem(TimeStampedModel):
+    routine = models.ForeignKey(Routine, on_delete=models.CASCADE, related_name="items")
+    title = models.CharField(max_length=120)
+    position = models.PositiveIntegerField(default=0)
+    is_enabled = models.BooleanField(default=True)
+    duration_minutes = models.PositiveSmallIntegerField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["position", "id"]
+
+    def __str__(self):
+        return self.title
+
+
+class RoutineLog(models.Model):
+    """A routine item ticked off on a given day."""
+
+    item = models.ForeignKey(RoutineItem, on_delete=models.CASCADE, related_name="logs")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="routine_logs")
+    date = models.DateField()
+    completed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["item", "date"], name="unique_routine_log_per_day")]
+        indexes = [models.Index(fields=["user", "date"])]

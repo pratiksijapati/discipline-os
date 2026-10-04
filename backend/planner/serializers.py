@@ -3,7 +3,7 @@ from rest_framework import serializers
 from core.serializers import CompletionStampMixin, check_time_range
 from core.time import user_now, user_today
 
-from .models import ScheduleItem, ScheduleTemplate
+from .models import Routine, RoutineItem, ScheduleItem, ScheduleTemplate
 from .status import display_status
 
 TEMPLATE_CONTENT_FIELDS = set(ScheduleItem.COPIED_FIELDS) | {"date"}
@@ -133,3 +133,87 @@ class ScheduleItemSerializer(CompletionStampMixin, serializers.ModelSerializer):
         ):
             validated_data["is_customized"] = True
         return super().update(instance, validated_data)
+
+
+# ---------- Routines ----------
+
+
+class RoutineItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RoutineItem
+        fields = ("id", "routine", "title", "position", "is_enabled", "duration_minutes", "created_at", "updated_at")
+        read_only_fields = ("id", "created_at", "updated_at")
+        extra_kwargs = {"position": {"required": False}}
+
+    def get_fields(self):
+        fields = super().get_fields()
+        request = self.context.get("request")
+        # Only the user's own routines can be chosen.
+        if request and request.user.is_authenticated:
+            fields["routine"].queryset = Routine.objects.filter(user=request.user)
+        if self.instance is not None:
+            fields["routine"].read_only = True
+        return fields
+
+    def validate_title(self, value):
+        value = value.strip()
+        if not value:
+            raise serializers.ValidationError("Give the step a name.")
+        return value
+
+    def create(self, validated_data):
+        if "position" not in validated_data:
+            last = validated_data["routine"].items.order_by("-position").first()
+            validated_data["position"] = (last.position if last else 0) + 1
+        return super().create(validated_data)
+
+
+class RoutineItemNestedSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RoutineItem
+        fields = ("id", "title", "position", "is_enabled", "duration_minutes")
+        read_only_fields = ("id", "position")
+
+
+class RoutineSerializer(serializers.ModelSerializer):
+    """Items can be sent when creating a routine; afterwards they're managed via /routine-items/."""
+
+    items = RoutineItemNestedSerializer(many=True, required=False)
+
+    class Meta:
+        model = Routine
+        fields = ("id", "name", "is_default", "is_active", "items", "created_at", "updated_at")
+        read_only_fields = ("id", "created_at", "updated_at")
+
+    def validate_name(self, value):
+        value = value.strip()
+        if not value:
+            raise serializers.ValidationError("Give the routine a name.")
+        return value
+
+    def create(self, validated_data):
+        items = validated_data.pop("items", [])
+        routine = Routine.objects.create(**{**validated_data, "is_default": False})
+        RoutineItem.objects.bulk_create(
+            [RoutineItem(routine=routine, position=i, **item) for i, item in enumerate(items, start=1)]
+        )
+        return routine
+
+    def update(self, instance, validated_data):
+        validated_data.pop("items", None)
+        validated_data.pop("is_default", None)  # handled by the view via make_default
+        return super().update(instance, validated_data)
+
+
+class RoutineCheckSerializer(serializers.Serializer):
+    done = serializers.BooleanField()
+    date = serializers.DateField(required=False)
+
+    def validate_date(self, value):
+        if value > user_today(self.context["request"].user):
+            raise serializers.ValidationError("You can't tick off a future day.")
+        return value
+
+
+class ItemOrderSerializer(serializers.Serializer):
+    item_ids = serializers.ListField(child=serializers.IntegerField(), allow_empty=False, max_length=200)
