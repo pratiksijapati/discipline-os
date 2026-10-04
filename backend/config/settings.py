@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "habits",
     "workouts",
     "goals",
+    "reflections",
     "discipline",
 ]
 

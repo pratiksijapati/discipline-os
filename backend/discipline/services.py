@@ -1,7 +1,7 @@
 """
-Builds the Today dashboard in one pass: the plan for today, what to do NOW,
-what's NEXT, today's tasks, habits and the morning routine. Uses a fixed number
-of queries regardless of how much history exists.
+Builds the summary of a day: plan, tasks, habits, routine and workout.
+Used by the Today dashboard (live) and by the Night Review (for any day).
+Uses a fixed number of queries regardless of how much history exists.
 """
 
 from dataclasses import dataclass
@@ -15,22 +15,27 @@ from planner.services import ensure_occurrences
 from planner.status import MISSED, display_status, is_happening_now
 from tasks.models import Task
 from tasks.selectors import today_tasks, with_display_order
+from workouts.models import WorkoutSession
 from workouts.services import workout_today
 
 
 @dataclass
-class TodaySnapshot:
-    now: datetime
-    today: date
+class DaySnapshot:
+    day: date
     now_time: time
     schedule: list[ScheduleItem]
     tasks: list[Task]
     habit_cards: list[dict]
     routine: dict
+    summary: dict
+
+
+@dataclass
+class TodaySnapshot(DaySnapshot):
+    now: datetime
     workout: dict
     current: ScheduleItem | None
     next: ScheduleItem | None
-    summary: dict
 
 
 def pick_current_and_next(items: list[ScheduleItem], now_time: time):
@@ -42,14 +47,14 @@ def pick_current_and_next(items: list[ScheduleItem], now_time: time):
     return current, next(upcoming, None)
 
 
-def _summarize(items, tasks, habit_cards, routine, today, now_time) -> dict:
-    statuses = [display_status(i, today, now_time) for i in items]
+def _summarize(items, tasks, habit_cards, routine, day, now_time, workout_done: bool) -> dict:
+    statuses = [display_status(i, day, now_time) for i in items]
     sched_done = statuses.count(ScheduleItem.Status.COMPLETED)
     sched_total = len(items) - statuses.count(ScheduleItem.Status.SKIPPED)
 
-    todays_tasks = [t for t in tasks if t.due_date == today]
-    task_done = sum(1 for t in todays_tasks if t.status == Task.Status.COMPLETED)
-    task_total = sum(1 for t in todays_tasks if t.status != Task.Status.SKIPPED)
+    days_tasks = [t for t in tasks if t.due_date == day]
+    task_done = sum(1 for t in days_tasks if t.status == Task.Status.COMPLETED)
+    task_total = sum(1 for t in days_tasks if t.status != Task.Status.SKIPPED)
 
     due_habits = [c for c in habit_cards if c["due_today"] or c["completed"]]
     habit_done = sum(1 for c in due_habits if c["completed"])
@@ -65,37 +70,58 @@ def _summarize(items, tasks, habit_cards, routine, today, now_time) -> dict:
         "tasks": {
             "completed": task_done,
             "total": task_total,
-            "overdue": sum(1 for t in tasks if t.is_open and t.due_date and t.due_date < today),
+            "overdue": sum(1 for t in tasks if t.is_open and t.due_date and t.due_date < day),
         },
         "habits": {"completed": habit_done, "total": len(due_habits)},
         "routine": {"completed": routine["completed"], "total": routine["total"]},
+        "workout_done": workout_done,
         # Simple completion %, until the Discipline Score engine arrives in Phase 7.
         "progress": round(100 * done / total) if total else 0,
     }
+
+
+def build_day(user, day: date, now_time: time) -> DaySnapshot:
+    """Snapshot of any day. For past days pass time.max so open items count as missed."""
+    ensure_occurrences(user, day, day)
+    items = list(ScheduleItem.objects.filter(user=user, date=day, is_removed=False).order_by("start_time", "id"))
+    tasks = list(with_display_order(today_tasks(Task.objects.filter(user=user), day)))
+    habit_cards = build_cards(user, day)
+    routine = progress_for_day(default_routine(user), day)
+    workout_done = WorkoutSession.objects.filter(
+        user=user, date=day, status=WorkoutSession.Status.COMPLETED
+    ).exists()
+    return DaySnapshot(
+        day=day,
+        now_time=now_time,
+        schedule=items,
+        tasks=tasks,
+        habit_cards=habit_cards,
+        routine=routine,
+        summary=_summarize(items, tasks, habit_cards, routine, day, now_time, workout_done),
+    )
 
 
 def build_today(user) -> TodaySnapshot:
     now = user_now(user)
     today = now.date()
     now_time = now.time().replace(tzinfo=None)
-
-    ensure_occurrences(user, today, today)
-    items = list(ScheduleItem.objects.filter(user=user, date=today, is_removed=False).order_by("start_time", "id"))
-    tasks = list(with_display_order(today_tasks(Task.objects.filter(user=user), today)))
-    habit_cards = build_cards(user, today)
-    routine = progress_for_day(default_routine(user), today)
-    current, upcoming = pick_current_and_next(items, now_time)
-
+    snap = build_day(user, today, now_time)
+    current, upcoming = pick_current_and_next(snap.schedule, now_time)
     return TodaySnapshot(
+        **vars(snap),
         now=now,
-        today=today,
-        now_time=now_time,
-        schedule=items,
-        tasks=tasks,
-        habit_cards=habit_cards,
-        routine=routine,
         workout=workout_today(user, today),
         current=current,
         next=upcoming,
-        summary=_summarize(items, tasks, habit_cards, routine, today, now_time),
     )
+
+
+def day_counts(summary: dict) -> dict:
+    """Totals for the Night Review: how much got done, and how much didn't."""
+    completed = summary["schedule"]["completed"] + summary["tasks"]["completed"] + summary["habits"]["completed"]
+    not_done = (
+        summary["schedule"]["missed"]
+        + (summary["tasks"]["total"] - summary["tasks"]["completed"])
+        + (summary["habits"]["total"] - summary["habits"]["completed"])
+    )
+    return {"completed": completed, "not_done": not_done}

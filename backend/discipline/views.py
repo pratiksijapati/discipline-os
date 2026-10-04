@@ -5,6 +5,7 @@ from goals.models import Goal
 from goals.serializers import GoalSerializer
 from habits.serializers import serialize_card
 from planner.serializers import ScheduleItemSerializer
+from reflections.models import DailyReflection
 from tasks.serializers import TaskSerializer
 
 from .services import build_today
@@ -15,14 +16,17 @@ class TodayDashboardView(APIView):
 
     def get(self, request):
         snap = build_today(request.user)
-        context = {"request": request, "today": snap.today, "now_time": snap.now_time}
+        context = {"request": request, "today": snap.day, "now_time": snap.now_time}
 
         def item(obj):
             return ScheduleItemSerializer(obj, context=context).data if obj else None
 
+        main_goal = Goal.objects.filter(user=request.user, is_main=True).first()
+        reflection = DailyReflection.objects.filter(user=request.user, date=snap.day).first()
+
         return Response(
             {
-                "date": snap.today.isoformat(),
+                "date": snap.day.isoformat(),
                 "now": snap.now.isoformat(),
                 "current": item(snap.current),
                 "next": item(snap.next),
@@ -34,11 +38,11 @@ class TodayDashboardView(APIView):
                 ],
                 "routine": snap.routine,
                 "workout": snap.workout,
-                "main_goal": (
-                    GoalSerializer(main_goal, context=context).data
-                    if (main_goal := Goal.objects.filter(user=request.user, is_main=True).first())
-                    else None
-                ),
+                "main_goal": GoalSerializer(main_goal, context=context).data if main_goal else None,
+                "reflection": {
+                    "completed": bool(reflection and reflection.is_completed),
+                    "day_rating": reflection.day_rating if reflection else None,
+                },
                 "summary": snap.summary,
             }
         )
