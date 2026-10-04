@@ -13,6 +13,9 @@ export interface UserSettings {
   score_weights: Record<string, number>;
   streak_threshold: number;
   daily_target_score: number;
+  wake_challenge_enabled: boolean;
+  wake_challenge_type: "dance" | "jumping_jacks" | "squats" | "math";
+  wake_challenge_seconds: number;
   updated_at: string;
 }
 
@@ -66,5 +69,8 @@ export type SettingsUpdate = Partial<
     | "score_weights"
     | "streak_threshold"
     | "daily_target_score"
+    | "wake_challenge_enabled"
+    | "wake_challenge_type"
+    | "wake_challenge_seconds"
   >
 >;

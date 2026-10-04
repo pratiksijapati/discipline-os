@@ -25,6 +25,7 @@ import type { Task } from "../modules/tasks/types";
 import { NowNext } from "../modules/today/components/NowNext";
 import { ScoreCard } from "../modules/discipline/components/ScoreCard";
 import { ReviewCard } from "../modules/today/components/ReviewCard";
+import { WakeCard } from "../modules/today/components/WakeCard";
 import { WorkoutCard } from "../modules/today/components/WorkoutCard";
 import { useTodayDashboard } from "../modules/today/hooks";
 import { formatLongDate, greeting } from "../utils/date";
@@ -58,6 +59,8 @@ export function TodayPage() {
       {header}
       <div className={styles.stack}>
         <ScoreCard score={data.score} streaks={data.streaks} summary={data.summary} />
+
+        <WakeCard data={data} />
 
         <ReviewCard data={data} />
 

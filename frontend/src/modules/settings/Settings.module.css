@@ -32,6 +32,30 @@
   }
 }
 
+.switchRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.switchRow .sectionHint {
+  margin-bottom: 0;
+}
+
+.switchLabel {
+  font-weight: 600;
+}
+
+.tryLink {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  font-weight: 600;
+  text-decoration: none;
+}
+
 .version {
   margin-top: var(--space-4);
   font-size: var(--text-xs);

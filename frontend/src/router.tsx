@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import { createBrowserRouter, Navigate } from "react-router";
 import { RedirectIfAuthenticated, RequireAuth } from "./auth/routeGuards";
+import { FullScreenLoader } from "./components/StatusScreen";
 import { AppShell } from "./layouts/AppShell";
 import { LoginPage } from "./pages/auth/LoginPage";
 import { RegisterPage } from "./pages/auth/RegisterPage";
@@ -14,6 +16,7 @@ import {
   SettingsPage,
   TasksPage,
   TodayPage,
+  WakePage,
   WorkoutPage,
   WorkoutSessionPage,
 } from "./pages/lazyPages";
@@ -30,6 +33,15 @@ export const router = createBrowserRouter([
   {
     element: <RequireAuth />,
     children: [
+      // Full-screen, no navigation: opened from the wake-up notification.
+      {
+        path: "/wake",
+        element: (
+          <Suspense fallback={<FullScreenLoader />}>
+            <WakePage />
+          </Suspense>
+        ),
+      },
       {
         element: <AppShell />,
         children: [

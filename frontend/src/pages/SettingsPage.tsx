@@ -10,6 +10,7 @@ import { ChangePasswordForm } from "../modules/settings/components/ChangePasswor
 import { NotificationSettings } from "../modules/notifications/components/NotificationSettings";
 import { DisciplineSettingsForm } from "../modules/settings/components/DisciplineSettingsForm";
 import { PreferencesForm } from "../modules/settings/components/PreferencesForm";
+import { WakeChallengeSettings } from "../modules/settings/components/WakeChallengeSettings";
 import { ProfileForm } from "../modules/settings/components/ProfileForm";
 import styles from "../modules/settings/Settings.module.css";
 
@@ -53,6 +54,14 @@ export function SettingsPage() {
             Parts you haven't set up never count against you. Past days keep the score they had.
           </p>
           <DisciplineSettingsForm />
+        </Card>
+
+        <Card aria-labelledby="settings-wake">
+          <h2 id="settings-wake" className={styles.sectionTitle}>
+            Wake-up
+          </h2>
+          <p className={styles.sectionHint}>A short challenge that proves you're really up.</p>
+          <WakeChallengeSettings />
         </Card>
 
         <Card aria-labelledby="settings-reminders">

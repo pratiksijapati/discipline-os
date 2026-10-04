@@ -12,6 +12,7 @@ export const WorkoutSessionPage = lazy(() =>
 );
 export const GrowthPage = lazy(() => import("./GrowthPage").then((m) => ({ default: m.GrowthPage })));
 export const ReflectionPage = lazy(() => import("./ReflectionPage").then((m) => ({ default: m.ReflectionPage })));
+export const WakePage = lazy(() => import("./WakePage").then((m) => ({ default: m.WakePage })));
 export const SettingsPage = lazy(() => import("./SettingsPage").then((m) => ({ default: m.SettingsPage })));
 export const MorePage = lazy(() => import("./MorePage").then((m) => ({ default: m.MorePage })));
 export const ProgressPage = lazy(() => import("./ProgressPage").then((m) => ({ default: m.ProgressPage })));
