@@ -82,8 +82,12 @@ def due_reminders(user, now: datetime) -> list[Reminder]:
             )
 
     # Wake-up
-    if prefs.wake_up and is_due(at(UserSettings.for_user(user).wake_time)):
-        out.append(Reminder(f"wake:{today}", "Good morning ☀️", "Time to get up — tap to start your day.", "/today"))
+    settings = UserSettings.for_user(user)
+    if prefs.wake_up and is_due(at(settings.wake_time)):
+        if settings.wake_challenge_enabled:
+            out.append(Reminder(f"wake:{today}", "Good morning ☀️", "Your wake-up challenge is ready — tap to start.", "/wake"))
+        else:
+            out.append(Reminder(f"wake:{today}", "Good morning ☀️", "Time to get up — tap to start your day.", "/today"))
 
     # Tasks still open
     if prefs.tasks and is_due(at(prefs.tasks_time)):

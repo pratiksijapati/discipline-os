@@ -16,5 +16,6 @@ urlpatterns = [
     path("api/", include("goals.urls")),
     path("api/", include("reflections.urls")),
     path("api/", include("notifications.urls")),
+    path("api/", include("challenges.urls")),
     path("api/", include("discipline.urls")),
 ]

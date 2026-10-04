@@ -10,6 +10,7 @@ workout planned on a rest day) never counts against you.
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
 
+from challenges.models import WakeChallengeSession
 from core.time import get_user_tz
 from goals.models import Goal, GoalProgress
 from planner.models import Category, RoutineItem, RoutineLog, ScheduleItem
@@ -78,6 +79,12 @@ def _wake_up(user, day, snap: DaySnapshot, settings, tz) -> Part:
                 ts.astimezone(tz).time()
                 for ts in RoutineLog.objects.filter(item__in=steps, date=day).values_list("completed_at", flat=True)
             ]
+    if settings.wake_challenge_enabled:
+        challenges = WakeChallengeSession.objects.filter(user=user, status=WakeChallengeSession.Status.COMPLETED)
+        # The challenge counts once you've started using it — new accounts aren't scored on it.
+        if challenges.filter(date__lte=day).exists():
+            tracked = True
+        confirmed += [ts.astimezone(tz).time() for ts in challenges.filter(date=day).values_list("completed_at", flat=True)]
     wake_items = [i for i in snap.schedule if "wake" in i.title.lower()]
     if wake_items:
         tracked = True
@@ -90,7 +97,8 @@ def _wake_up(user, day, snap: DaySnapshot, settings, tz) -> Part:
     if not tracked:
         return NOT_TRACKED
     if not confirmed:
-        return Part(True, 0.0, f"Tick “Wake up” by {_clock(deadline)}")
+        how = "Finish the wake-up challenge" if settings.wake_challenge_enabled else "Tick “Wake up”"
+        return Part(True, 0.0, f"{how} by {_clock(deadline)}")
     first = min(confirmed)
     if first <= deadline:
         return Part(True, 1.0, f"Up at {_clock(first)}")

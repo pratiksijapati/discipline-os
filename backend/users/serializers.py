@@ -17,6 +17,9 @@ class UserSettingsSerializer(serializers.ModelSerializer):
             "score_weights",
             "streak_threshold",
             "daily_target_score",
+            "wake_challenge_enabled",
+            "wake_challenge_type",
+            "wake_challenge_seconds",
             "updated_at",
         )
         read_only_fields = ("updated_at",)

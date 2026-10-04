@@ -6,6 +6,7 @@ from django.contrib.auth.models import PermissionsMixin
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
+from core.choices import ChallengeType
 from core.models import TimeStampedModel
 from core.time import DEFAULT_TIMEZONE, validate_timezone
 
@@ -108,6 +109,13 @@ class UserSettings(TimeStampedModel):
     # A day at or above this score extends the discipline streak.
     streak_threshold = models.PositiveSmallIntegerField(default=70, validators=[MaxValueValidator(100)])
     daily_target_score = models.PositiveSmallIntegerField(default=80, validators=[MaxValueValidator(100)])
+
+    # ---------- Wake-up challenge ----------
+    wake_challenge_enabled = models.BooleanField(default=True)
+    wake_challenge_type = models.CharField(max_length=20, choices=ChallengeType.choices, default=ChallengeType.DANCE)
+    wake_challenge_seconds = models.PositiveSmallIntegerField(
+        default=60, validators=[MinValueValidator(15), MaxValueValidator(600)]
+    )
 
     class Meta:
         verbose_name = "user settings"
