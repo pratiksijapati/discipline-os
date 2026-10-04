@@ -10,6 +10,7 @@ import { EmptyState } from "../components/ui/EmptyState";
 import { Fab } from "../components/ui/Fab";
 import { Sheet } from "../components/ui/Sheet";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
+import { GoalCard } from "../modules/goals/components/GoalCard";
 import { HabitCard } from "../modules/habits/components/HabitCard";
 import habitStyles from "../modules/habits/components/HabitCard.module.css";
 import { RoutineChecklist } from "../modules/routine/components/RoutineChecklist";
@@ -90,6 +91,14 @@ export function TodayPage() {
             />
           )}
         </section>
+
+        {data.main_goal && (
+          <GoalCard
+            goal={data.main_goal}
+            compact
+            onOpen={(goal) => navigate("/growth", { state: { goalId: goal.id } })}
+          />
+        )}
 
         <WorkoutCard workout={data.workout} />
 

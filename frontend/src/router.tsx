@@ -1,4 +1,4 @@
-import { ChartLine, NotebookPen, Target } from "lucide-react";
+import { ChartLine, NotebookPen } from "lucide-react";
 import { createBrowserRouter, Navigate } from "react-router";
 import { RedirectIfAuthenticated, RequireAuth } from "./auth/routeGuards";
 import { AppShell } from "./layouts/AppShell";
@@ -6,6 +6,7 @@ import { LoginPage } from "./pages/auth/LoginPage";
 import { RegisterPage } from "./pages/auth/RegisterPage";
 import {
   ComingSoonPage,
+  GrowthPage,
   HabitsPage,
   MorePage,
   RoutinePage,
@@ -40,16 +41,7 @@ export const router = createBrowserRouter([
           { path: "/workout/session/:id", element: <WorkoutSessionPage /> },
           { path: "/habits", element: <HabitsPage /> },
           { path: "/routine", element: <RoutinePage /> },
-          {
-            path: "/growth",
-            element: (
-              <ComingSoonPage
-                title="Goals"
-                icon={Target}
-                description="Personal growth goals with progress tracking are on the way."
-              />
-            ),
-          },
+          { path: "/growth", element: <GrowthPage /> },
           {
             path: "/progress",
             element: (

@@ -1,3 +1,4 @@
+import type { Goal } from "../goals/types";
 import type { HabitCard } from "../habits/types";
 import type { RoutineToday } from "../routine/types";
 import type { ScheduleItem } from "../schedule/types";
@@ -30,5 +31,6 @@ export interface TodayDashboard {
   habits: HabitCard[];
   routine: RoutineToday;
   workout: WorkoutToday;
+  main_goal: Goal | null;
   summary: TodaySummary;
 }
