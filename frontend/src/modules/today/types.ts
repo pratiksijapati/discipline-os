@@ -2,6 +2,7 @@ import type { HabitCard } from "../habits/types";
 import type { RoutineToday } from "../routine/types";
 import type { ScheduleItem } from "../schedule/types";
 import type { Task } from "../tasks/types";
+import type { WorkoutToday } from "../workouts/types";
 
 interface Count {
   completed: number;
@@ -28,5 +29,6 @@ export interface TodayDashboard {
   /** Habits due today, or already done today. */
   habits: HabitCard[];
   routine: RoutineToday;
+  workout: WorkoutToday;
   summary: TodaySummary;
 }

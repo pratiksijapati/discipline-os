@@ -23,6 +23,7 @@ import { useSetTaskStatus } from "../modules/tasks/hooks";
 import type { Task } from "../modules/tasks/types";
 import { NowNext } from "../modules/today/components/NowNext";
 import { ProgressCard } from "../modules/today/components/ProgressCard";
+import { WorkoutCard } from "../modules/today/components/WorkoutCard";
 import { useTodayDashboard } from "../modules/today/hooks";
 import { formatLongDate, greeting } from "../utils/date";
 import styles from "./pages.module.css";
@@ -89,6 +90,8 @@ export function TodayPage() {
             />
           )}
         </section>
+
+        <WorkoutCard workout={data.workout} />
 
         <RoutineChecklist data={data.routine} />
 

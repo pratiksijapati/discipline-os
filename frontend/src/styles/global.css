@@ -60,6 +60,28 @@ textarea {
   background: var(--accent-soft);
 }
 
+/* A link that looks like a primary button (for navigation actions). */
+.link-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--tap);
+  padding: 0 var(--space-5);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  background: var(--accent-strong);
+  color: var(--on-accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.link-button--secondary {
+  background: var(--surface);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;

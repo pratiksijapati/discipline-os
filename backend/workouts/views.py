@@ -1,4 +1,4 @@
-from django.db.models import Count, ProtectedError, Q
+from django.db.models import Count, Q, RestrictedError
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
@@ -31,7 +31,7 @@ class ExerciseViewSet(OwnedQuerysetMixin, viewsets.ModelViewSet):
     def perform_destroy(self, instance):
         try:
             instance.delete()
-        except ProtectedError:
+        except RestrictedError:
             raise ValidationError("This exercise is used in a plan or past workout. Archive it instead.")
 
     @action(detail=True, methods=["get"])

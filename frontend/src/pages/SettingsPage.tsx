@@ -6,6 +6,7 @@ import { Card } from "../components/ui/Card";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { AppearanceSection } from "../modules/settings/components/AppearanceSection";
 import { ChangePasswordForm } from "../modules/settings/components/ChangePasswordForm";
+import { PreferencesForm } from "../modules/settings/components/PreferencesForm";
 import { ProfileForm } from "../modules/settings/components/ProfileForm";
 import styles from "../modules/settings/Settings.module.css";
 
@@ -31,6 +32,14 @@ export function SettingsPage() {
           </h2>
           <p className={styles.sectionHint}>System follows your phone or computer setting.</p>
           <AppearanceSection />
+        </Card>
+
+        <Card aria-labelledby="settings-preferences">
+          <h2 id="settings-preferences" className={styles.sectionTitle}>
+            Week &amp; workouts
+          </h2>
+          <p className={styles.sectionHint}>How your weeks are counted and what you aim for.</p>
+          <PreferencesForm />
         </Card>
 
         <Card aria-labelledby="settings-password">

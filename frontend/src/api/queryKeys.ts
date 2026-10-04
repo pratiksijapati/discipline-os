@@ -13,4 +13,12 @@ export const queryKeys = {
   habitsList: ["habits", "list"] as const,
   routineToday: ["routine", "today"] as const,
   routines: ["routines"] as const,
+  workoutsAll: ["workouts"] as const,
+  workoutActive: ["workouts", "active"] as const,
+  workoutStats: ["workouts", "stats"] as const,
+  workoutHistory: ["workouts", "history"] as const,
+  workoutSession: (id: number) => ["workouts", "session", id] as const,
+  plans: ["workout-plans"] as const,
+  exercises: ["exercises"] as const,
+  exerciseHistory: (id: number) => ["exercises", id, "history"] as const,
 };

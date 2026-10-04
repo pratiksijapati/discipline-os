@@ -1,0 +1,61 @@
+.card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.card > svg {
+  flex-shrink: 0;
+  color: var(--accent-strong);
+}
+
+.text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.text span {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.label {
+  font-size: var(--text-xs) !important;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-strong) !important;
+}
+
+.active {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+  color: var(--on-accent);
+}
+
+.active > svg,
+.active .text span {
+  color: inherit;
+  opacity: 0.9;
+}
+
+.active a {
+  background: var(--on-accent);
+  color: var(--accent-strong);
+}
+
+.done {
+  border-color: color-mix(in srgb, var(--success) 45%, var(--border));
+}
+
+.done > svg {
+  color: var(--success);
+}

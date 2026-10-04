@@ -1,4 +1,4 @@
-import { ChartLine, Dumbbell, NotebookPen, Target } from "lucide-react";
+import { ChartLine, NotebookPen, Target } from "lucide-react";
 import { createBrowserRouter, Navigate } from "react-router";
 import { RedirectIfAuthenticated, RequireAuth } from "./auth/routeGuards";
 import { AppShell } from "./layouts/AppShell";
@@ -13,6 +13,8 @@ import {
   SettingsPage,
   TasksPage,
   TodayPage,
+  WorkoutPage,
+  WorkoutSessionPage,
 } from "./pages/lazyPages";
 import { NotFoundPage } from "./pages/NotFoundPage";
 
@@ -34,16 +36,8 @@ export const router = createBrowserRouter([
           { path: "/today", element: <TodayPage /> },
           { path: "/schedule", element: <SchedulePage /> },
           { path: "/tasks", element: <TasksPage /> },
-          {
-            path: "/workout",
-            element: (
-              <ComingSoonPage
-                title="Workout"
-                icon={Dumbbell}
-                description="Workout plans, live sessions and history are on the way."
-              />
-            ),
-          },
+          { path: "/workout", element: <WorkoutPage /> },
+          { path: "/workout/session/:id", element: <WorkoutSessionPage /> },
           { path: "/habits", element: <HabitsPage /> },
           { path: "/routine", element: <RoutinePage /> },
           {

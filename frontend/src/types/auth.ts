@@ -6,6 +6,7 @@ export type WeekStart = 0 | 6;
 export interface UserSettings {
   theme: ThemePreference;
   week_start: WeekStart;
+  weekly_workout_target: number;
   updated_at: string;
 }
 
@@ -48,4 +49,4 @@ export interface ChangePasswordPayload {
 }
 
 export type ProfileUpdate = Partial<Pick<User, "first_name" | "last_name" | "timezone">>;
-export type SettingsUpdate = Partial<Pick<UserSettings, "theme" | "week_start">>;
+export type SettingsUpdate = Partial<Pick<UserSettings, "theme" | "week_start" | "weekly_workout_target">>;

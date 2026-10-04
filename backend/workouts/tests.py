@@ -177,3 +177,11 @@ class WorkoutApiTests(AuthedAPITestCase):
             self.assertIsNone(data["active"])
             session = self.start().data
             self.assertEqual(self.client.get(reverse("dashboard-today")).data["workout"]["active"]["id"], session["id"])
+
+    def test_deleting_account_removes_everything(self):
+        session = self.start().data
+        self.log_set(session)
+        self.client.post(reverse("workout-complete", args=[session["id"]]))
+        self.user.delete()  # must not be blocked by exercises used in plans/sessions
+        self.assertFalse(Exercise.objects.filter(user_id=self.user.id).exists())
+        self.assertFalse(WorkoutSession.objects.filter(user_id=self.user.id).exists())

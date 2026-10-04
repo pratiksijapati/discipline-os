@@ -1,12 +1,12 @@
 """
 Workouts.
 
-Exercise         – the user's exercise library.
-WorkoutPlan      – e.g. "Push Day", with PlanExercise rows (targets, order).
-WorkoutSession   – one workout actually done (or in progress).
-SessionExercise  – a COPY of each plan exercise taken when the session starts,
+Exercise         ??? the user's exercise library.
+WorkoutPlan      ??? e.g. "Push Day", with PlanExercise rows (targets, order).
+WorkoutSession   ??? one workout actually done (or in progress).
+SessionExercise  ??? a COPY of each plan exercise taken when the session starts,
                    so editing a plan later never rewrites workout history.
-WorkoutSet       – one logged set (reps × weight, or seconds for timed exercises).
+WorkoutSet       ??? one logged set (reps ?? weight, or seconds for timed exercises).
 """
 
 from django.conf import settings
@@ -55,7 +55,7 @@ class WorkoutPlan(TimeStampedModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="workout_plans")
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
-    days_of_week = models.JSONField(default=list, blank=True)  # Mon=0 … Sun=6
+    days_of_week = models.JSONField(default=list, blank=True)  # Mon=0 ??? Sun=6
     is_active = models.BooleanField(default=True)
 
     class Meta:
@@ -83,7 +83,7 @@ class ExerciseTargets(models.Model):
 
 class PlanExercise(ExerciseTargets):
     plan = models.ForeignKey(WorkoutPlan, on_delete=models.CASCADE, related_name="exercises")
-    exercise = models.ForeignKey(Exercise, on_delete=models.PROTECT, related_name="plan_rows")
+    exercise = models.ForeignKey(Exercise, on_delete=models.RESTRICT, related_name="plan_rows")
     rest_seconds = models.PositiveSmallIntegerField(default=60)
 
     class Meta(ExerciseTargets.Meta):
@@ -132,7 +132,7 @@ class WorkoutSession(TimeStampedModel):
 
 class SessionExercise(ExerciseTargets):
     session = models.ForeignKey(WorkoutSession, on_delete=models.CASCADE, related_name="exercises")
-    exercise = models.ForeignKey(Exercise, on_delete=models.PROTECT, related_name="session_rows")
+    exercise = models.ForeignKey(Exercise, on_delete=models.RESTRICT, related_name="session_rows")
 
     class Meta(ExerciseTargets.Meta):
         pass
