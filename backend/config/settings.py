@@ -21,6 +21,10 @@ environ.Env.read_env(BASE_DIR / ".env")
 SECRET_KEY = env("SECRET_KEY")
 DEBUG = env("DEBUG")
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
+# Render tells the app its own public hostname.
+RENDER_EXTERNAL_HOSTNAME = env("RENDER_EXTERNAL_HOSTNAME", default="")
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 
 # ---------- Applications ----------
@@ -52,6 +56,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -86,6 +91,8 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {"default": env.db("DATABASE_URL")}
 DATABASES["default"]["CONN_MAX_AGE"] = env.int("DB_CONN_MAX_AGE", default=60)
 DATABASES["default"]["CONN_HEALTH_CHECKS"] = True
+# Needed behind a transaction-mode pooler such as Neon's "-pooler" host.
+DATABASES["default"]["DISABLE_SERVER_SIDE_CURSORS"] = env.bool("DB_DISABLE_SERVER_SIDE_CURSORS", default=False)
 
 
 # ---------- Authentication ----------
@@ -146,6 +153,29 @@ REMINDER_CRON_SECRET = env("REMINDER_CRON_SECRET", default="")
 # ---------- CORS ----------
 
 CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=["http://localhost:5173"])
+# The admin site uses CSRF-protected forms; list the backend's https origin here.
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
+if RENDER_EXTERNAL_HOSTNAME:
+    CSRF_TRUSTED_ORIGINS.append(f"https://{RENDER_EXTERNAL_HOSTNAME}")
+
+
+# ---------- Production security ----------
+# Only when DEBUG is off, so local http development keeps working.
+
+if not DEBUG:
+    # Render terminates HTTPS and forwards plain http with this header.
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=True)
+    # The health check comes from inside Render over plain http.
+    SECURE_REDIRECT_EXEMPT = [r"^api/health/$"]
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = env.int("SECURE_HSTS_SECONDS", default=60 * 60 * 24 * 30)
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_REFERRER_POLICY = "same-origin"
+    # *.onrender.com is shared with other people's sites, so HSTS must not claim
+    # subdomains or ask for browser preload.
+    SILENCED_SYSTEM_CHECKS = ["security.W005", "security.W021"]
 
 
 # ---------- Internationalization / time ----------
@@ -162,5 +192,22 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+# Whitenoise serves the admin's CSS/JS straight from gunicorn, compressed and cache-busted.
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+}
+
+
+# ---------- Logging ----------
+# Everything to the console, where Render collects it.
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {"console": {"class": "logging.StreamHandler"}},
+    "root": {"handlers": ["console"], "level": env("LOG_LEVEL", default="INFO")},
+    "loggers": {"django": {"handlers": ["console"], "level": "INFO", "propagate": False}},
+}
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
