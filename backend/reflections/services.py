@@ -3,6 +3,8 @@ from datetime import date, time, timedelta
 from django.utils import timezone
 
 from core.time import user_now
+from discipline.engine import score_for
+from discipline.scoring import rating_for
 from discipline.services import build_day, day_counts
 from planner.models import Category, ScheduleItem
 
@@ -40,7 +42,14 @@ def complete_day(reflection: DailyReflection) -> DailyReflection:
         title__icontains="review",
         is_removed=False,
     ).exclude(status=ScheduleItem.Status.COMPLETED).update(status=ScheduleItem.Status.COMPLETED, completed_at=now)
-    reflection.stats = live_day_stats(reflection.user, reflection.date)
     reflection.completed_at = now
     reflection.save()
+    # Score the day now that the review counts, and keep it with the frozen summary.
+    day_score = score_for(reflection.user, reflection.date)
+    reflection.stats = {
+        **live_day_stats(reflection.user, reflection.date),
+        "score": day_score.score,
+        "rating": rating_for(day_score.score),
+    }
+    reflection.save(update_fields=["stats", "updated_at"])
     return reflection

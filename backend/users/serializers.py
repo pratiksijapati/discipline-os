@@ -8,8 +8,45 @@ from .models import User, UserSettings, normalize_login_email
 class UserSettingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserSettings
-        fields = ("theme", "week_start", "weekly_workout_target", "updated_at")
+        fields = (
+            "theme",
+            "week_start",
+            "weekly_workout_target",
+            "wake_time",
+            "wake_grace_minutes",
+            "score_weights",
+            "streak_threshold",
+            "daily_target_score",
+            "updated_at",
+        )
         read_only_fields = ("updated_at",)
+
+    @staticmethod
+    def _default_weights() -> dict:
+        # Imported lazily: the scoring engine depends on this app, not the other way round.
+        from discipline.scoring import DEFAULT_WEIGHTS
+
+        return DEFAULT_WEIGHTS
+
+    def validate_score_weights(self, value):
+        defaults = self._default_weights()
+        if not isinstance(value, dict):
+            raise serializers.ValidationError("Send points per component, e.g. {\"workout\": 20}.")
+        unknown = set(value) - set(defaults)
+        if unknown:
+            raise serializers.ValidationError(f"Unknown components: {', '.join(sorted(unknown))}.")
+        for key, points in value.items():
+            if not isinstance(points, int) or isinstance(points, bool) or not 0 <= points <= 100:
+                raise serializers.ValidationError(f"{key}: use a whole number from 0 to 100.")
+        merged = {**defaults, **value}
+        if sum(merged.values()) == 0:
+            raise serializers.ValidationError("At least one component needs points.")
+        return merged
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data["score_weights"] = {**self._default_weights(), **(instance.score_weights or {})}
+        return data
 
 
 class UserSerializer(serializers.ModelSerializer):

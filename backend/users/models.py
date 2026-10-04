@@ -1,3 +1,5 @@
+from datetime import time
+
 from django.conf import settings
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
@@ -79,7 +81,6 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
 class UserSettings(TimeStampedModel):
     """
     Per-user preferences. Created automatically the first time they are read.
-    More fields (wake-up time, scoring weights, workout target…) are added in their phases.
     """
 
     class Theme(models.TextChoices):
@@ -98,6 +99,15 @@ class UserSettings(TimeStampedModel):
     weekly_workout_target = models.PositiveSmallIntegerField(
         default=4, validators=[MinValueValidator(1), MaxValueValidator(14)]
     )
+
+    # ---------- Discipline score ----------
+    wake_time = models.TimeField(default=time(6, 0))
+    wake_grace_minutes = models.PositiveSmallIntegerField(default=15, validators=[MaxValueValidator(180)])
+    # Points per score component; missing keys use the defaults (see discipline/scoring.py).
+    score_weights = models.JSONField(default=dict, blank=True)
+    # A day at or above this score extends the discipline streak.
+    streak_threshold = models.PositiveSmallIntegerField(default=70, validators=[MaxValueValidator(100)])
+    daily_target_score = models.PositiveSmallIntegerField(default=80, validators=[MaxValueValidator(100)])
 
     class Meta:
         verbose_name = "user settings"
