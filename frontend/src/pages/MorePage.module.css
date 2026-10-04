@@ -44,6 +44,21 @@
   color: var(--text-subtle);
 }
 
+.installBox {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+  padding: var(--space-5);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.installBox h2 {
+  font-size: var(--text-md);
+}
+
 .logout {
   display: flex;
   align-items: center;

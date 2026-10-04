@@ -51,6 +51,17 @@ textarea {
   color: inherit;
 }
 
+/* Instant taps on phones: no double-tap-to-zoom delay on controls. */
+a,
+button,
+label,
+input,
+select,
+textarea,
+summary {
+  touch-action: manipulation;
+}
+
 :focus-visible {
   outline: 2px solid var(--accent-strong);
   outline-offset: 2px;

@@ -2,7 +2,9 @@ import { ChevronRight, LogOut } from "lucide-react";
 import { Link } from "react-router";
 import { useAuth, useCurrentUser } from "../auth/useAuth";
 import { PageHeader } from "../components/PageHeader";
+import { InstallCard } from "../components/pwa/InstallCard";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
+import { useInstallState } from "../hooks/useInstallState";
 import { SECONDARY_NAV } from "../layouts/navigation";
 import styles from "./MorePage.module.css";
 
@@ -10,6 +12,7 @@ export function MorePage() {
   useDocumentTitle("More");
   const user = useCurrentUser();
   const { logout } = useAuth();
+  const installState = useInstallState();
 
   return (
     <>
@@ -25,6 +28,12 @@ export function MorePage() {
           </Link>
         ))}
       </nav>
+      {installState !== "installed" && (
+        <section className={styles.installBox} aria-labelledby="install-heading">
+          <h2 id="install-heading">Install the app</h2>
+          <InstallCard />
+        </section>
+      )}
       <button type="button" className={styles.logout} onClick={() => void logout()}>
         <LogOut size={20} aria-hidden />
         Log out

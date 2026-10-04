@@ -2,6 +2,7 @@ import { LogOut } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
 import { PageHeader } from "../components/PageHeader";
 import { Button } from "../components/ui/Button";
+import { InstallCard } from "../components/pwa/InstallCard";
 import { Card } from "../components/ui/Card";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { AppearanceSection } from "../modules/settings/components/AppearanceSection";
@@ -51,6 +52,17 @@ export function SettingsPage() {
             Parts you haven't set up never count against you. Past days keep the score they had.
           </p>
           <DisciplineSettingsForm />
+        </Card>
+
+        <Card aria-labelledby="settings-app">
+          <h2 id="settings-app" className={styles.sectionTitle}>
+            App
+          </h2>
+          <p className={styles.sectionHint}>Install Discipline OS to open it from your home screen.</p>
+          <InstallCard />
+          <p className={styles.version}>
+            Version {new Date(__BUILD_TIME__).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" })}
+          </p>
         </Card>
 
         <Card aria-labelledby="settings-password">

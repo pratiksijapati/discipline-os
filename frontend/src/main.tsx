@@ -8,7 +8,13 @@ import { ToastProvider } from "./components/toast/ToastProvider";
 import { router } from "./router";
 import "./styles/tokens.css";
 import "./styles/global.css";
+import { OfflineBanner } from "./components/pwa/OfflineBanner";
+import { UpdatePrompt } from "./components/pwa/UpdatePrompt";
+import { startInstallListener } from "./services/pwa";
 import { ThemeProvider } from "./theme/ThemeProvider";
+
+// Must start before React renders: browsers fire the install event very early.
+startInstallListener();
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,9 +35,11 @@ createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <ToastProvider>
+          <OfflineBanner />
           <AuthProvider>
             <RouterProvider router={router} />
           </AuthProvider>
+          <UpdatePrompt />
         </ToastProvider>
       </ThemeProvider>
     </QueryClientProvider>
