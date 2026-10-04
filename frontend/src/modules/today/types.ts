@@ -15,6 +15,7 @@ export interface TodaySummary {
   tasks: Count & { overdue: number };
   habits: Count;
   routine: Count;
+  workout_done: boolean;
   /** Simple completion % until the Discipline Score arrives. */
   progress: number;
 }
@@ -32,5 +33,6 @@ export interface TodayDashboard {
   routine: RoutineToday;
   workout: WorkoutToday;
   main_goal: Goal | null;
+  reflection: { completed: boolean; day_rating: number | null };
   summary: TodaySummary;
 }

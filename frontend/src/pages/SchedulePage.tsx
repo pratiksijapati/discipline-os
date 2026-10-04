@@ -1,5 +1,6 @@
 import { CalendarPlus } from "lucide-react";
 import { useState } from "react";
+import { useLocation } from "react-router";
 import { useCurrentUser } from "../auth/useAuth";
 import { LoadError } from "../components/LoadError";
 import { PageHeader } from "../components/PageHeader";
@@ -37,7 +38,9 @@ export function SchedulePage() {
   const today = todayIn(user.timezone);
   const tomorrow = addDays(today, 1);
 
-  const [view, setView] = useState<View>("today");
+  const location = useLocation();
+  // "Prepare tomorrow" (from the Night Review) opens straight on Tomorrow.
+  const [view, setView] = useState<View>((location.state as { view?: View } | null)?.view ?? "today");
   const [sheet, setSheet] = useState<SheetState>(null);
 
   const [start, end] =

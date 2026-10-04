@@ -24,6 +24,7 @@ import { useSetTaskStatus } from "../modules/tasks/hooks";
 import type { Task } from "../modules/tasks/types";
 import { NowNext } from "../modules/today/components/NowNext";
 import { ProgressCard } from "../modules/today/components/ProgressCard";
+import { ReviewCard } from "../modules/today/components/ReviewCard";
 import { WorkoutCard } from "../modules/today/components/WorkoutCard";
 import { useTodayDashboard } from "../modules/today/hooks";
 import { formatLongDate, greeting } from "../utils/date";
@@ -57,6 +58,8 @@ export function TodayPage() {
       {header}
       <div className={styles.stack}>
         <ProgressCard summary={data.summary} />
+
+        <ReviewCard data={data} />
 
         {data.schedule.length > 0 && (
           <NowNext

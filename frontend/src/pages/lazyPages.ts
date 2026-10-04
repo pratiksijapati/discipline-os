@@ -11,6 +11,7 @@ export const WorkoutSessionPage = lazy(() =>
   import("./WorkoutSessionPage").then((m) => ({ default: m.WorkoutSessionPage })),
 );
 export const GrowthPage = lazy(() => import("./GrowthPage").then((m) => ({ default: m.GrowthPage })));
+export const ReflectionPage = lazy(() => import("./ReflectionPage").then((m) => ({ default: m.ReflectionPage })));
 export const SettingsPage = lazy(() => import("./SettingsPage").then((m) => ({ default: m.SettingsPage })));
 export const MorePage = lazy(() => import("./MorePage").then((m) => ({ default: m.MorePage })));
 export const ComingSoonPage = lazy(() => import("./ComingSoonPage").then((m) => ({ default: m.ComingSoonPage })));

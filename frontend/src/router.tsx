@@ -1,4 +1,4 @@
-import { ChartLine, NotebookPen } from "lucide-react";
+import { ChartLine } from "lucide-react";
 import { createBrowserRouter, Navigate } from "react-router";
 import { RedirectIfAuthenticated, RequireAuth } from "./auth/routeGuards";
 import { AppShell } from "./layouts/AppShell";
@@ -9,6 +9,7 @@ import {
   GrowthPage,
   HabitsPage,
   MorePage,
+  ReflectionPage,
   RoutinePage,
   SchedulePage,
   SettingsPage,
@@ -52,16 +53,7 @@ export const router = createBrowserRouter([
               />
             ),
           },
-          {
-            path: "/reflection",
-            element: (
-              <ComingSoonPage
-                title="Reflection"
-                icon={NotebookPen}
-                description="Your nightly review and daily score summary are on the way."
-              />
-            ),
-          },
+          { path: "/reflection", element: <ReflectionPage /> },
           { path: "/settings", element: <SettingsPage /> },
           { path: "/more", element: <MorePage /> },
         ],
