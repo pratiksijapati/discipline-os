@@ -22,7 +22,11 @@ export function PastReviews({ excludeDate }: { excludeDate: string }) {
                   {ratingEmoji(r.day_rating)}
                 </span>
                 <span className={styles.pastDate}>{formatDay(r.date)}</span>
-                {"progress" in r.stats && <span className={styles.pastPct}>{r.stats.progress}%</span>}
+                {"score" in r.stats && typeof r.stats.score === "number" ? (
+                  <span className={styles.pastPct}>{r.stats.score}</span>
+                ) : (
+                  "progress" in r.stats && <span className={styles.pastPct}>{r.stats.progress}%</span>
+                )}
               </summary>
               <div className={styles.pastBody}>
                 {r.went_well && (

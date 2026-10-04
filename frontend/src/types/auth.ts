@@ -7,6 +7,12 @@ export interface UserSettings {
   theme: ThemePreference;
   week_start: WeekStart;
   weekly_workout_target: number;
+  /** "HH:MM:SS" */
+  wake_time: string;
+  wake_grace_minutes: number;
+  score_weights: Record<string, number>;
+  streak_threshold: number;
+  daily_target_score: number;
   updated_at: string;
 }
 
@@ -49,4 +55,16 @@ export interface ChangePasswordPayload {
 }
 
 export type ProfileUpdate = Partial<Pick<User, "first_name" | "last_name" | "timezone">>;
-export type SettingsUpdate = Partial<Pick<UserSettings, "theme" | "week_start" | "weekly_workout_target">>;
+export type SettingsUpdate = Partial<
+  Pick<
+    UserSettings,
+    | "theme"
+    | "week_start"
+    | "weekly_workout_target"
+    | "wake_time"
+    | "wake_grace_minutes"
+    | "score_weights"
+    | "streak_threshold"
+    | "daily_target_score"
+  >
+>;

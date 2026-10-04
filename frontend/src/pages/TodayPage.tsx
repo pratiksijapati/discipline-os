@@ -23,7 +23,7 @@ import { TaskList } from "../modules/tasks/components/TaskList";
 import { useSetTaskStatus } from "../modules/tasks/hooks";
 import type { Task } from "../modules/tasks/types";
 import { NowNext } from "../modules/today/components/NowNext";
-import { ProgressCard } from "../modules/today/components/ProgressCard";
+import { ScoreCard } from "../modules/discipline/components/ScoreCard";
 import { ReviewCard } from "../modules/today/components/ReviewCard";
 import { WorkoutCard } from "../modules/today/components/WorkoutCard";
 import { useTodayDashboard } from "../modules/today/hooks";
@@ -57,7 +57,7 @@ export function TodayPage() {
     <>
       {header}
       <div className={styles.stack}>
-        <ProgressCard summary={data.summary} />
+        <ScoreCard score={data.score} streaks={data.streaks} summary={data.summary} />
 
         <ReviewCard data={data} />
 

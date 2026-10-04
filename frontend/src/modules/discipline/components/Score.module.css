@@ -1,0 +1,193 @@
+/* ---------- card ---------- */
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  padding: var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.value {
+  display: block;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.outOf {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--text-subtle);
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.heading {
+  font-weight: 700;
+}
+
+.message {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.ratingRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.streakChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--accent-strong);
+}
+
+.counts {
+  font-size: var(--text-xs);
+  color: var(--text-subtle);
+  font-variant-numeric: tabular-nums;
+}
+
+.chevron {
+  flex-shrink: 0;
+  color: var(--text-subtle);
+}
+
+/* ---------- breakdown ---------- */
+
+.breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.components {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.component {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.componentTop {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.componentLabel {
+  font-weight: 600;
+}
+
+.componentPoints {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.componentBar {
+  height: 8px;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: var(--surface-3);
+}
+
+.componentBar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+}
+
+.componentDetail {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.skipped .componentLabel,
+.skipped .componentPoints {
+  color: var(--text-subtle);
+}
+
+.note {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.subheading {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-md);
+}
+
+.streaks {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.streaks li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--tap);
+  border-top: 1px solid var(--border);
+}
+
+.flameOn {
+  color: var(--accent-strong);
+}
+
+.flameOff {
+  color: var(--border-strong);
+}
+
+.streakLabel {
+  flex: 1;
+  font-weight: 600;
+}
+
+.streakHint {
+  font-weight: 400;
+  color: var(--text-subtle);
+}
+
+.streakValue {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.streakBest {
+  font-weight: 400;
+  color: var(--text-subtle);
+}

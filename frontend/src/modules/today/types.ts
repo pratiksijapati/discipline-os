@@ -1,3 +1,4 @@
+import type { DayScore, Streaks } from "../discipline/types";
 import type { Goal } from "../goals/types";
 import type { HabitCard } from "../habits/types";
 import type { RoutineToday } from "../routine/types";
@@ -24,6 +25,8 @@ export interface TodayDashboard {
   date: string;
   /** ISO timestamp in the user's timezone offset. */
   now: string;
+  score: DayScore;
+  streaks: Streaks;
   current: ScheduleItem | null;
   next: ScheduleItem | null;
   schedule: ScheduleItem[];

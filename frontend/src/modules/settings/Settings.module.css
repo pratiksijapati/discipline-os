@@ -32,6 +32,58 @@
   }
 }
 
+.weights {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.weightsLegend {
+  margin-bottom: var(--space-2);
+  padding: 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.weightRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 52px;
+  border-top: 1px solid var(--border);
+}
+
+.weightRow input {
+  width: 80px;
+  min-height: var(--tap);
+  padding: 0 var(--space-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  font-size: var(--text-md);
+  font-weight: 700;
+  text-align: center;
+}
+
+.weightTotal {
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.reset {
+  min-height: var(--tap);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--accent-strong);
+  font-weight: 600;
+  cursor: pointer;
+}
+
 .actions {
   display: flex;
   justify-content: flex-end;

@@ -1,3 +1,4 @@
+import type { ScoreRating } from "../discipline/types";
 import type { TodaySummary } from "../today/types";
 
 export interface DailyReflection {
@@ -19,6 +20,9 @@ export interface DailyReflection {
 export interface DayStats extends TodaySummary {
   completed: number;
   not_done: number;
+  /** Present once the day is completed. */
+  score?: number | null;
+  rating?: ScoreRating | null;
 }
 
 export interface ReviewState {

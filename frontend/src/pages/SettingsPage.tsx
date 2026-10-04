@@ -6,6 +6,7 @@ import { Card } from "../components/ui/Card";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { AppearanceSection } from "../modules/settings/components/AppearanceSection";
 import { ChangePasswordForm } from "../modules/settings/components/ChangePasswordForm";
+import { DisciplineSettingsForm } from "../modules/settings/components/DisciplineSettingsForm";
 import { PreferencesForm } from "../modules/settings/components/PreferencesForm";
 import { ProfileForm } from "../modules/settings/components/ProfileForm";
 import styles from "../modules/settings/Settings.module.css";
@@ -40,6 +41,16 @@ export function SettingsPage() {
           </h2>
           <p className={styles.sectionHint}>How your weeks are counted and what you aim for.</p>
           <PreferencesForm />
+        </Card>
+
+        <Card aria-labelledby="settings-discipline">
+          <h2 id="settings-discipline" className={styles.sectionTitle}>
+            Discipline score
+          </h2>
+          <p className={styles.sectionHint}>
+            Parts you haven't set up never count against you. Past days keep the score they had.
+          </p>
+          <DisciplineSettingsForm />
         </Card>
 
         <Card aria-labelledby="settings-password">
