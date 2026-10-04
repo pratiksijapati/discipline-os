@@ -1,0 +1,74 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.optional {
+  font-weight: 400;
+  color: var(--text-subtle);
+}
+
+.control {
+  width: 100%;
+  min-height: var(--tap-lg);
+  padding: 0 var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  /* 16px+ stops iOS from zooming into inputs */
+  font-size: var(--text-md);
+  color: var(--text);
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
+}
+
+.control::placeholder {
+  color: var(--text-subtle);
+}
+
+.control:focus {
+  outline: none;
+  border-color: var(--accent-strong);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.control[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+.control:disabled,
+input.control:read-only {
+  background: var(--surface-2);
+  color: var(--text-muted);
+}
+
+.select {
+  appearance: none;
+  padding-right: var(--space-10);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--text-muted) 50%),
+    linear-gradient(135deg, var(--text-muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 22px) 50%,
+    calc(100% - 16px) 50%;
+  background-size: 6px 6px;
+  background-repeat: no-repeat;
+}
+
+.hint {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.error {
+  font-size: var(--text-sm);
+  color: var(--danger);
+}

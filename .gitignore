@@ -22,3 +22,6 @@ frontend/dev-dist/
 .idea/
 Thumbs.db
 .DS_Store
+
+# ---------- Claude Code local test config ----------
+.claude/
