@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "workouts",
     "goals",
     "reflections",
+    "notifications",
     "discipline",
 ]
 
@@ -129,6 +130,16 @@ SIMPLE_JWT = {
     "UPDATE_LAST_LOGIN": True,
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
+
+
+# ---------- Web Push reminders ----------
+# Generate with: python manage.py generate_vapid_keys. Leave empty to disable push.
+
+VAPID_PUBLIC_KEY = env("VAPID_PUBLIC_KEY", default="")
+VAPID_PRIVATE_KEY = env("VAPID_PRIVATE_KEY", default="")
+VAPID_SUBJECT = env("VAPID_SUBJECT", default="")
+# Optional: lets an external cron call POST /api/notifications/run/ every minute.
+REMINDER_CRON_SECRET = env("REMINDER_CRON_SECRET", default="")
 
 
 # ---------- CORS ----------
