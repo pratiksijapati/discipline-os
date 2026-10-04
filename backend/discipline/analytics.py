@@ -190,13 +190,17 @@ def weekly_review(user, today: date, offset_weeks: int = 0) -> dict:
     strongest = ranked[-1] if ranked and ranked[-1][1]["rate"] >= 70 else None
 
     went_well, struggled = [], []
+    mentioned: set[str] = set()  # components already covered, so nothing is said twice
     if wake["tracked_days"] and wake["success_days"] >= max(1, round(0.7 * wake["tracked_days"])):
         went_well.append(f"Woke up on time {wake['success_days']} of {wake['tracked_days']} days.")
+        mentioned.add("wake_up")
     if workouts >= settings.weekly_workout_target:
         went_well.append(f"Hit your workout target ({workouts} of {settings.weekly_workout_target}).")
+        mentioned.add("workout")
     if tasks["rate"] is not None and tasks["rate"] >= 80:
         went_well.append(f"Finished {tasks['completed']} of {tasks['total']} tasks.")
-    if strongest and not any(LABELS[strongest[0]].split()[0].lower() in w.lower() for w in went_well):
+        mentioned.add("important_tasks")
+    if strongest and strongest[0] not in mentioned:
         went_well.append(f"Strongest area: {LABELS[strongest[0]].lower()} ({strongest[1]['rate']}%).")
     if learning >= 1:
         went_well.append(f"Put {learning:g} hours into learning.")

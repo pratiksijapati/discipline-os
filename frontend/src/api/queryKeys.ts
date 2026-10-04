@@ -26,4 +26,6 @@ export const queryKeys = {
   goalProgress: (id: number) => ["goals", "progress", id] as const,
   reviewCurrent: ["reflections", "current"] as const,
   reviewHistory: ["reflections", "history"] as const,
+  progress: (range: string) => ["progress", range] as const,
+  weekly: (offset: number) => ["progress", "weekly", offset] as const,
 };

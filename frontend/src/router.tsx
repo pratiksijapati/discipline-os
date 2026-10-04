@@ -1,14 +1,13 @@
-import { ChartLine } from "lucide-react";
 import { createBrowserRouter, Navigate } from "react-router";
 import { RedirectIfAuthenticated, RequireAuth } from "./auth/routeGuards";
 import { AppShell } from "./layouts/AppShell";
 import { LoginPage } from "./pages/auth/LoginPage";
 import { RegisterPage } from "./pages/auth/RegisterPage";
 import {
-  ComingSoonPage,
   GrowthPage,
   HabitsPage,
   MorePage,
+  ProgressPage,
   ReflectionPage,
   RoutinePage,
   SchedulePage,
@@ -43,16 +42,7 @@ export const router = createBrowserRouter([
           { path: "/habits", element: <HabitsPage /> },
           { path: "/routine", element: <RoutinePage /> },
           { path: "/growth", element: <GrowthPage /> },
-          {
-            path: "/progress",
-            element: (
-              <ComingSoonPage
-                title="Progress"
-                icon={ChartLine}
-                description="Discipline score trends, streaks and weekly reviews are on the way."
-              />
-            ),
-          },
+          { path: "/progress", element: <ProgressPage /> },
           { path: "/reflection", element: <ReflectionPage /> },
           { path: "/settings", element: <SettingsPage /> },
           { path: "/more", element: <MorePage /> },

@@ -14,4 +14,4 @@ export const GrowthPage = lazy(() => import("./GrowthPage").then((m) => ({ defau
 export const ReflectionPage = lazy(() => import("./ReflectionPage").then((m) => ({ default: m.ReflectionPage })));
 export const SettingsPage = lazy(() => import("./SettingsPage").then((m) => ({ default: m.SettingsPage })));
 export const MorePage = lazy(() => import("./MorePage").then((m) => ({ default: m.MorePage })));
-export const ComingSoonPage = lazy(() => import("./ComingSoonPage").then((m) => ({ default: m.ComingSoonPage })));
+export const ProgressPage = lazy(() => import("./ProgressPage").then((m) => ({ default: m.ProgressPage })));

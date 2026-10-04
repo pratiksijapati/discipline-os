@@ -18,6 +18,16 @@ export function formatMinutes(totalSeconds: number | null | undefined): string {
   return rest ? `${hours} h ${rest} min` : `${hours} h`;
 }
 
+/** 3.33 → "3 h 20 m", 0.5 → "30 m", 0 → "0 h" */
+export function formatHours(hours: number): string {
+  const totalMinutes = Math.round(hours * 60);
+  const h = Math.floor(totalMinutes / 60);
+  const m = totalMinutes % 60;
+  if (!h && !m) return "0 h";
+  if (!h) return `${m} m`;
+  return m ? `${h} h ${m} m` : `${h} h`;
+}
+
 /** 60 → "60 sec", 90 → "1:30" */
 export function formatSeconds(seconds: number | null | undefined): string {
   if (!seconds) return "";

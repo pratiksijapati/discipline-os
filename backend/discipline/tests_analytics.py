@@ -74,6 +74,8 @@ class AnalyticsTests(AuthedAPITestCase):
         self.assertIn("routine", review["focus_next_week"].lower())
         self.assertTrue(any("Woke up on time 6 of 7" in s for s in review["went_well"]))
         self.assertTrue(any("workout target" in s for s in review["went_well"]))
+        # Wake-up is already mentioned, so it isn't repeated as the "strongest area".
+        self.assertFalse(any("Strongest area: wake" in s for s in review["went_well"]))
         self.assertEqual(review["your_notes"], ["Sleep earlier"])
 
     def test_progress_range(self):
