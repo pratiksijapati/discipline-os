@@ -12,7 +12,7 @@ from planner.serializers import ScheduleItemSerializer
 from reflections.models import DailyReflection
 from tasks.serializers import TaskSerializer
 
-from . import engine, scoring
+from . import analytics, engine, scoring
 from .models import DailyScore
 from .services import build_today
 
@@ -73,6 +73,46 @@ class TodayScoreView(APIView):
                 "streaks": engine.streaks(request.user, snap.day, today_score),
             }
         )
+
+
+def _refresh_scores(user):
+    """Make sure past days are final and today's score is current before reporting."""
+    snap = build_today(user)
+    engine.finalize_past_days(user, snap.day)
+    engine.save_score(user, snap.day, snap, final=False)
+    return snap.day
+
+
+class ProgressView(APIView):
+    """GET /api/progress/?range=7d|30d|90d|365d"""
+
+    def get(self, request):
+        range_key = request.query_params.get("range", "30d")
+        if range_key not in analytics.RANGES:
+            raise serializers.ValidationError({"range": [f"Use one of: {', '.join(analytics.RANGES)}."]})
+        today = _refresh_scores(request.user)
+        return Response(
+            {
+                **analytics.progress(request.user, today, range_key),
+                "streaks": engine.streaks(
+                    request.user, today, DailyScore.objects.get(user=request.user, date=today)
+                ),
+            }
+        )
+
+
+class WeeklyReviewView(APIView):
+    """GET /api/progress/weekly/?offset=0 (this week) | 1 (last week) …"""
+
+    def get(self, request):
+        try:
+            offset = int(request.query_params.get("offset", 0))
+        except ValueError:
+            offset = -1
+        if not 0 <= offset <= 52:
+            raise serializers.ValidationError({"offset": ["Use a number from 0 to 52."]})
+        today = _refresh_scores(request.user)
+        return Response(analytics.weekly_review(request.user, today, offset))
 
 
 class ScoreHistoryView(APIView):
