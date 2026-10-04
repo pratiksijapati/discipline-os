@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "dev:alt": "vite --port 5174 --strictPort --mode claude",
+    "pwa:alt": "vite build --mode claude && vite preview --port 4174 --strictPort",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview"
