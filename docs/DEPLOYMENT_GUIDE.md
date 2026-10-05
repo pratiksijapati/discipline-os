@@ -301,6 +301,7 @@ Test locally before pushing (see the [Developer Guide](DEVELOPER_GUIDE.md#12-day
 | Problem | Cause | Fix |
 |---|---|---|
 | App says it can't reach the server / login fails, browser console mentions **CORS** | `CORS_ALLOWED_ORIGINS` on Render doesn't match the Vercel address | Set it to exactly `https://discipline-os-omega.vercel.app` and redeploy. (Stray spaces and a trailing `/` are tolerated.) |
+| Right after a deploy: *"'text/html' is not a valid JavaScript MIME type"* | An app opened before the deploy asked for the old build's files | Fixed in the app: it reloads itself into the new version. If it still shows, close the app fully and reopen. `vercel.json` must keep returning 404 for missing `/assets/*` files. |
 | First load takes ~1 minute | Free Render server was asleep | Normal; set up the cron job (Step 5) |
 | `/api/health/` shows an error or times out | Wrong `DATABASE_URL`, or Neon paused | Re-copy the pooled string from Neon → Connect; check Neon project isn't suspended |
 | Render build fails at `migrate` | Database unreachable or a migration error | Read the last lines of the build log; fix and push |
