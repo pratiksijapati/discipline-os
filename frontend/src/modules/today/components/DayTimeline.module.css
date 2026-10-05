@@ -1,0 +1,87 @@
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding-left: var(--space-2);
+}
+
+.row + .row {
+  border-top: 1px solid var(--border);
+}
+
+.main {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  min-height: var(--tap-lg);
+  padding: 0 var(--space-4) 0 var(--space-1);
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.time {
+  flex-shrink: 0;
+  width: 4.6em;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tag {
+  flex-shrink: 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-subtle);
+}
+
+/* ---------- states ---------- */
+
+.completed .title {
+  color: var(--text-muted);
+  text-decoration: line-through;
+  text-decoration-color: var(--text-subtle);
+}
+
+.skipped .title {
+  color: var(--text-subtle);
+}
+
+.missed .tag {
+  color: var(--danger);
+}
+
+.now,
+.in_progress {
+  background: var(--accent-soft);
+}
+
+.now .tag,
+.in_progress .tag {
+  color: var(--accent-strong);
+}

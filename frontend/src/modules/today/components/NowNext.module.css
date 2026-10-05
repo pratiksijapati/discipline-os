@@ -58,55 +58,64 @@
   color: var(--text-muted);
 }
 
+/* Main action takes the room; "Done" is as wide as its label. */
 .actions {
   display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: var(--space-3);
 }
 
-.free {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-3);
-  color: var(--text-muted);
+.actions > :only-child {
+  grid-column: 1 / -1;
 }
 
-.free .title {
-  font-size: var(--text-lg);
-  color: var(--text);
+.actions > * {
+  white-space: nowrap;
 }
 
+/* Very narrow phones: stack the buttons so labels never get cut. */
+@media (max-width: 359px) {
+  .actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+.bigLink {
+  width: 100%;
+  min-height: var(--tap-lg);
+  font-size: var(--text-md);
+}
+
+/* NEXT: a slim row directly under the NOW card. */
 .next {
   display: grid;
-  grid-template-columns: auto 1fr;
-  grid-template-areas:
-    "label label"
-    "title time";
-  align-items: baseline;
-  gap: 2px var(--space-3);
-  padding: var(--space-3) 0 0;
-  border: 0;
-  border-top: 1px solid var(--border);
-  background: transparent;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--tap-lg);
+  margin-top: calc(-1 * var(--space-3));
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
   color: var(--text);
   text-align: left;
+  text-decoration: none;
   cursor: pointer;
 }
 
 .nextLabel {
-  grid-area: label;
   color: var(--text-subtle);
 }
 
 .nextTitle {
-  grid-area: title;
+  overflow: hidden;
   font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .nextTime {
-  grid-area: time;
-  justify-self: end;
   font-size: var(--text-sm);
   color: var(--text-muted);
   white-space: nowrap;
