@@ -152,9 +152,14 @@ REMINDER_CRON_SECRET = env("REMINDER_CRON_SECRET", default="")
 
 # ---------- CORS ----------
 
-CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=["http://localhost:5173"])
+def _origins(name: str, default: list[str]) -> list[str]:
+    """Origins from a comma list, forgiving stray spaces and trailing slashes from dashboard copy-paste."""
+    return [o.strip().rstrip("/") for o in env.list(name, default=default) if o.strip()]
+
+
+CORS_ALLOWED_ORIGINS = _origins("CORS_ALLOWED_ORIGINS", ["http://localhost:5173"])
 # The admin site uses CSRF-protected forms; list the backend's https origin here.
-CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
+CSRF_TRUSTED_ORIGINS = _origins("CSRF_TRUSTED_ORIGINS", [])
 if RENDER_EXTERNAL_HOSTNAME:
     CSRF_TRUSTED_ORIGINS.append(f"https://{RENDER_EXTERNAL_HOSTNAME}")
 
