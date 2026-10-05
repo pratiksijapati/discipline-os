@@ -39,7 +39,7 @@ export function SchedulePage() {
   const tomorrow = addDays(today, 1);
 
   const location = useLocation();
-  // "Prepare tomorrow" (from the Night Review) opens straight on Tomorrow.
+  // Links can open a specific view, e.g. { view: "tomorrow" }.
   const [view, setView] = useState<View>((location.state as { view?: View } | null)?.view ?? "today");
   const [sheet, setSheet] = useState<SheetState>(null);
 

@@ -12,13 +12,13 @@ export function ReviewCard({ data }: { data: TodayDashboard }) {
 
   if (data.reflection.completed) {
     return (
-      <Link to="/reflection" className={`${styles.card} ${styles.done}`}>
+      <Link to="/tomorrow" className={`${styles.card} ${styles.done}`}>
         <span aria-hidden style={{ fontSize: 22 }}>
           {ratingEmoji(data.reflection.day_rating)}
         </span>
         <div className={styles.text}>
           <strong>Day complete ✓</strong>
-          <span>See your night review</span>
+          <span>Prepare tomorrow →</span>
         </div>
       </Link>
     );

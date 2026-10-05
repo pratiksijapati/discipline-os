@@ -140,13 +140,18 @@ function NowBody({ data, onStatus, onOpen, onMove }: NowNextProps) {
     );
   }
 
-  return (
-    <Headline
-      icon={<Coffee size={24} />}
-      title={data.reflection.completed ? "Day complete ✓" : "Nothing else planned today"}
-      sub={data.reflection.completed ? "Rest well." : "Enjoy the time — or plan tomorrow."}
-    />
-  );
+  if (data.reflection.completed) {
+    return (
+      <>
+        <Headline icon={<Moon size={24} />} title="Day complete ✓" sub="Set tomorrow up, then rest well." />
+        <Link to="/tomorrow" className={`link-button ${styles.bigLink}`}>
+          Prepare tomorrow
+        </Link>
+      </>
+    );
+  }
+
+  return <Headline icon={<Coffee size={24} />} title="Nothing else planned today" sub="Enjoy the time — or plan tomorrow." />;
 }
 
 function Headline({ icon, title, sub }: { icon: ReactNode; title: string; sub: string }) {
