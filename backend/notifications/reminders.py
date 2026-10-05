@@ -74,7 +74,8 @@ def due_reminders(user, now: datetime) -> list[Reminder]:
             when = f"starts in {_plural(lead, 'minute')}" if lead else "is starting now"
             out.append(
                 Reminder(
-                    key=f"schedule:{item.id}:{today}",
+                    # Start time in the key: an item moved to later today gets a fresh reminder.
+                    key=f"schedule:{item.id}:{today}:{item.start_time:%H%M}",
                     title=f"{item.title} {when}",
                     body=f"{_clock(item.start_time)} · tap to open your plan",
                     url="/workout" if is_workout else "/today",

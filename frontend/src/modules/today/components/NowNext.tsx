@@ -18,24 +18,25 @@ interface NowNextProps {
   data: TodayDashboard;
   onStatus: (item: ScheduleItem, status: ScheduleStatus) => void;
   onOpen: (item: ScheduleItem) => void;
+  onMove: (item: ScheduleItem) => void;
 }
 
 /** The most important part of the app: what to do right now, then what comes next. */
-export function NowNext({ data, onStatus, onOpen }: NowNextProps) {
+export function NowNext({ data, onStatus, onOpen, onMove }: NowNextProps) {
   return (
     <>
       <section className={styles.card} aria-labelledby="now-heading">
         <p id="now-heading" className={styles.label}>
           Now
         </p>
-        <NowBody data={data} onStatus={onStatus} onOpen={onOpen} />
+        <NowBody data={data} onStatus={onStatus} onOpen={onOpen} onMove={onMove} />
       </section>
       <NextRow data={data} onOpen={onOpen} />
     </>
   );
 }
 
-function NowBody({ data, onStatus, onOpen }: NowNextProps) {
+function NowBody({ data, onStatus, onOpen, onMove }: NowNextProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
   const startWorkout = useStartWorkout();
@@ -96,6 +97,9 @@ function NowBody({ data, onStatus, onOpen }: NowNextProps) {
             </>
           )}
         </div>
+        <button type="button" className={styles.moveLink} onClick={() => onMove(current)}>
+          Can't do it now? Move it
+        </button>
       </>
     );
   }

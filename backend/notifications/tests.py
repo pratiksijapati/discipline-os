@@ -120,6 +120,19 @@ class SendingTests(AuthedAPITestCase):
         self.assertFalse(PushSubscription.objects.exists())
 
     @patch("notifications.push.webpush")
+    def test_item_moved_later_today_gets_a_fresh_reminder(self, webpush):
+        self.subscribe()
+        item = ScheduleItem.objects.create(
+            user=self.user, title="Study", date=MON, occurrence_date=MON, start_time=time(9), reminder_minutes=0
+        )
+        self.assertEqual(run(ktm(9, 1)), 1)
+        item.start_time = time(11)  # moved to later today
+        item.save()
+        self.assertEqual(run(ktm(9, 2)), 0)
+        self.assertEqual(run(ktm(11, 1)), 1)
+        self.assertEqual(run(ktm(11, 2)), 0)
+
+    @patch("notifications.push.webpush")
     def test_other_users_never_get_my_reminders(self, webpush):
         PushSubscription.objects.create(user=self.other, endpoint="https://push.example.com/other", p256dh="k", auth="a")
         Task.objects.create(user=self.user, title="Mine", due_date=MON, priority="high")

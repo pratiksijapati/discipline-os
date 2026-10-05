@@ -91,6 +91,36 @@ class ScheduleApiTests(AuthedAPITestCase):
             self.assertEqual(self.list_day(MON), [])
             self.assertEqual(len(self.list_day(TUE)), 2)  # moved one + Tuesday's own
 
+    def test_moved_occurrence_survives_template_edits_and_leaves_template_alone(self):
+        template = self.create_template()
+        with frozen_local_time(2026, 10, 5, 8):
+            item = self.list_day(MON)[0]
+            self.client.patch(
+                reverse("schedule-item-detail", args=[item["id"]]),
+                {"date": "2026-10-06", "start_time": "07:00", "end_time": "08:00"},
+                format="json",
+            )
+            # The routine itself is unchanged.
+            res = self.client.get(reverse("schedule-template-detail", args=[template["id"]]))
+            self.assertEqual((res.data["start_time"], res.data["end_time"]), ("20:00:00", "21:00:00"))
+            # Editing the routine later never removes or rewrites the moved one.
+            self.client.patch(reverse("schedule-template-detail", args=[template["id"]]), {"title": "Deep study"}, format="json")
+            tue = {i["id"]: i for i in self.list_day(TUE)}
+            self.assertEqual(tue[item["id"]]["title"], "Study")
+            self.assertEqual(tue[item["id"]]["start_time"], "07:00:00")
+            self.assertEqual(len(tue), 2)
+
+    def test_moving_a_skipped_item_later_today_reopens_it(self):
+        self.create_template()
+        with frozen_local_time(2026, 10, 5, 8):
+            item = self.list_day(MON)[0]
+            url = reverse("schedule-item-detail", args=[item["id"]])
+            self.client.patch(url, {"status": "skipped"}, format="json")
+            res = self.client.patch(url, {"start_time": "22:00", "end_time": "23:00", "status": "upcoming"}, format="json")
+            self.assertEqual(res.status_code, 200, res.data)
+            self.assertEqual((res.data["status"], res.data["start_time"]), ("upcoming", "22:00:00"))
+            self.assertEqual(len(self.list_day(MON)), 1)
+
     def test_deleted_occurrence_stays_deleted(self):
         self.create_template()
         with frozen_local_time(2026, 10, 5, 8):

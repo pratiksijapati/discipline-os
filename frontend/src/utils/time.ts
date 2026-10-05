@@ -71,9 +71,24 @@ export function toInputTime(value: string | null | undefined): string {
   return value ? value.slice(0, 5) : "";
 }
 
-function minutesOf(value: string): number {
+/** "06:15[:00]" → 375 */
+export function minutesOf(value: string): number {
   const [h, m] = value.split(":").map(Number);
   return h * 60 + m;
+}
+
+/** 375 → "06:15" */
+export function fromMinutes(total: number): string {
+  return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
+}
+
+/** The current wall-clock time in the given timezone, as "HH:MM". */
+export function nowTimeIn(timeZone: string): string {
+  try {
+    return new Intl.DateTimeFormat("en-GB", { timeZone, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date());
+  } catch {
+    return new Date().toTimeString().slice(0, 5);
+  }
 }
 
 /**

@@ -11,7 +11,7 @@ import { Fab } from "../components/ui/Fab";
 import { Sheet } from "../components/ui/Sheet";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { ScoreChip } from "../modules/discipline/components/ScoreChip";
-import { ScheduleItemDetails } from "../modules/schedule/components/ScheduleItemDetails";
+import { ScheduleItemDetails, type ItemDetailsView } from "../modules/schedule/components/ScheduleItemDetails";
 import { useSetItemStatus } from "../modules/schedule/hooks";
 import type { ScheduleItem } from "../modules/schedule/types";
 import { TaskForm } from "../modules/tasks/components/TaskForm";
@@ -34,7 +34,8 @@ export function TodayPage() {
   const { data, isLoading, error, refetch } = useTodayDashboard();
   const setItemStatus = useSetItemStatus();
 
-  const [openItem, setOpenItem] = useState<ScheduleItem | null>(null);
+  const [opened, setOpened] = useState<{ item: ScheduleItem; view: ItemDetailsView } | null>(null);
+  const openItem = (item: ScheduleItem) => setOpened({ item, view: "actions" });
   const [addingTask, setAddingTask] = useState(false);
 
   const title = `${greeting(user.timezone)}, ${user.first_name}`;
@@ -52,14 +53,19 @@ export function TodayPage() {
       <div className={styles.stack}>
         <WakeCard data={data} />
 
-        <NowNext data={data} onStatus={(item, status) => setItemStatus.mutate({ id: item.id, status })} onOpen={setOpenItem} />
+        <NowNext
+          data={data}
+          onStatus={(item, status) => setItemStatus.mutate({ id: item.id, status })}
+          onOpen={openItem}
+          onMove={(item) => setOpened({ item, view: "move" })}
+        />
 
         <ReviewCard data={data} />
 
         <section aria-labelledby="plan-heading">
           <SectionHeader id="plan-heading" title="Today's plan" action={<Link to="/schedule">Edit</Link>} />
           {data.schedule.length > 0 ? (
-            <DayTimeline items={data.schedule} currentId={data.current?.id ?? null} onToggle={toggleItem} onOpen={setOpenItem} />
+            <DayTimeline items={data.schedule} currentId={data.current?.id ?? null} onToggle={toggleItem} onOpen={openItem} />
           ) : (
             <EmptyState
               icon={CalendarPlus}
@@ -79,9 +85,15 @@ export function TodayPage() {
 
       <Fab label="Add task" onClick={() => setAddingTask(true)} />
 
-      <Sheet open={openItem !== null} onClose={() => setOpenItem(null)} title={openItem?.title ?? ""}>
-        {openItem && (
-          <ScheduleItemDetails item={openItem} weekStart={user.settings.week_start} onClose={() => setOpenItem(null)} />
+      <Sheet open={opened !== null} onClose={() => setOpened(null)} title={opened?.item.title ?? ""}>
+        {opened && (
+          <ScheduleItemDetails
+            key={`${opened.item.id}-${opened.view}`}
+            item={opened.item}
+            weekStart={user.settings.week_start}
+            initialView={opened.view}
+            onClose={() => setOpened(null)}
+          />
         )}
       </Sheet>
 
