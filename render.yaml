@@ -7,6 +7,8 @@ services:
     name: discipline-os-api
     runtime: python
     plan: free
+    # Same region as the Neon database (AWS Singapore) for low latency.
+    region: singapore
     rootDir: backend
     # The free plan has no pre-deploy step, so migrations run at the end of the build.
     buildCommand: >-
