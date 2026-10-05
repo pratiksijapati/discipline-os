@@ -1,18 +1,32 @@
-import { lazy } from "react";
+import { lazy, type ComponentType } from "react";
+import { isStaleBuildError, reloadForNewBuild } from "../services/staleBuild";
 
-// App pages are code-split so the login screen loads fast.
-export const TodayPage = lazy(() => import("./TodayPage").then((m) => ({ default: m.TodayPage })));
-export const SchedulePage = lazy(() => import("./SchedulePage").then((m) => ({ default: m.SchedulePage })));
-export const TasksPage = lazy(() => import("./TasksPage").then((m) => ({ default: m.TasksPage })));
-export const HabitsPage = lazy(() => import("./HabitsPage").then((m) => ({ default: m.HabitsPage })));
-export const RoutinePage = lazy(() => import("./RoutinePage").then((m) => ({ default: m.RoutinePage })));
-export const WorkoutPage = lazy(() => import("./WorkoutPage").then((m) => ({ default: m.WorkoutPage })));
-export const WorkoutSessionPage = lazy(() =>
-  import("./WorkoutSessionPage").then((m) => ({ default: m.WorkoutSessionPage })),
-);
-export const GrowthPage = lazy(() => import("./GrowthPage").then((m) => ({ default: m.GrowthPage })));
-export const ReflectionPage = lazy(() => import("./ReflectionPage").then((m) => ({ default: m.ReflectionPage })));
-export const WakePage = lazy(() => import("./WakePage").then((m) => ({ default: m.WakePage })));
-export const SettingsPage = lazy(() => import("./SettingsPage").then((m) => ({ default: m.SettingsPage })));
-export const MorePage = lazy(() => import("./MorePage").then((m) => ({ default: m.MorePage })));
-export const ProgressPage = lazy(() => import("./ProgressPage").then((m) => ({ default: m.ProgressPage })));
+/**
+ * App pages are code-split so the login screen loads fast.
+ * If a page's file is gone because a new version was deployed, reload to get the new build.
+ */
+function page<T extends ComponentType>(load: () => Promise<T>) {
+  return lazy(() =>
+    load().then(
+      (component) => ({ default: component }),
+      (error: unknown) => {
+        if (isStaleBuildError(error) && reloadForNewBuild()) return new Promise<never>(() => {});
+        throw error;
+      },
+    ),
+  );
+}
+
+export const TodayPage = page(() => import("./TodayPage").then((m) => m.TodayPage));
+export const SchedulePage = page(() => import("./SchedulePage").then((m) => m.SchedulePage));
+export const TasksPage = page(() => import("./TasksPage").then((m) => m.TasksPage));
+export const HabitsPage = page(() => import("./HabitsPage").then((m) => m.HabitsPage));
+export const RoutinePage = page(() => import("./RoutinePage").then((m) => m.RoutinePage));
+export const WorkoutPage = page(() => import("./WorkoutPage").then((m) => m.WorkoutPage));
+export const WorkoutSessionPage = page(() => import("./WorkoutSessionPage").then((m) => m.WorkoutSessionPage));
+export const GrowthPage = page(() => import("./GrowthPage").then((m) => m.GrowthPage));
+export const ReflectionPage = page(() => import("./ReflectionPage").then((m) => m.ReflectionPage));
+export const WakePage = page(() => import("./WakePage").then((m) => m.WakePage));
+export const SettingsPage = page(() => import("./SettingsPage").then((m) => m.SettingsPage));
+export const MorePage = page(() => import("./MorePage").then((m) => m.MorePage));
+export const ProgressPage = page(() => import("./ProgressPage").then((m) => m.ProgressPage));

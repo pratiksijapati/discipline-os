@@ -21,46 +21,53 @@ import {
   WorkoutSessionPage,
 } from "./pages/lazyPages";
 import { NotFoundPage } from "./pages/NotFoundPage";
+import { RouteErrorPage } from "./pages/RouteErrorPage";
 
 export const router = createBrowserRouter([
   {
-    element: <RedirectIfAuthenticated />,
+    // Any crash below shows a friendly screen (and recovers from stale deploys).
+    errorElement: <RouteErrorPage />,
     children: [
-      { path: "/login", element: <LoginPage /> },
-      { path: "/register", element: <RegisterPage /> },
-    ],
-  },
-  {
-    element: <RequireAuth />,
-    children: [
-      // Full-screen, no navigation: opened from the wake-up notification.
       {
-        path: "/wake",
-        element: (
-          <Suspense fallback={<FullScreenLoader />}>
-            <WakePage />
-          </Suspense>
-        ),
-      },
-      {
-        element: <AppShell />,
+        element: <RedirectIfAuthenticated />,
         children: [
-          { path: "/", element: <Navigate to="/today" replace /> },
-          { path: "/today", element: <TodayPage /> },
-          { path: "/schedule", element: <SchedulePage /> },
-          { path: "/tasks", element: <TasksPage /> },
-          { path: "/workout", element: <WorkoutPage /> },
-          { path: "/workout/session/:id", element: <WorkoutSessionPage /> },
-          { path: "/habits", element: <HabitsPage /> },
-          { path: "/routine", element: <RoutinePage /> },
-          { path: "/growth", element: <GrowthPage /> },
-          { path: "/progress", element: <ProgressPage /> },
-          { path: "/reflection", element: <ReflectionPage /> },
-          { path: "/settings", element: <SettingsPage /> },
-          { path: "/more", element: <MorePage /> },
+          { path: "/login", element: <LoginPage /> },
+          { path: "/register", element: <RegisterPage /> },
         ],
       },
+      {
+        element: <RequireAuth />,
+        children: [
+          // Full-screen, no navigation: opened from the wake-up notification.
+          {
+            path: "/wake",
+            element: (
+              <Suspense fallback={<FullScreenLoader />}>
+                <WakePage />
+              </Suspense>
+            ),
+          },
+          {
+            element: <AppShell />,
+            children: [
+              { path: "/", element: <Navigate to="/today" replace /> },
+              { path: "/today", element: <TodayPage /> },
+              { path: "/schedule", element: <SchedulePage /> },
+              { path: "/tasks", element: <TasksPage /> },
+              { path: "/workout", element: <WorkoutPage /> },
+              { path: "/workout/session/:id", element: <WorkoutSessionPage /> },
+              { path: "/habits", element: <HabitsPage /> },
+              { path: "/routine", element: <RoutinePage /> },
+              { path: "/growth", element: <GrowthPage /> },
+              { path: "/progress", element: <ProgressPage /> },
+              { path: "/reflection", element: <ReflectionPage /> },
+              { path: "/settings", element: <SettingsPage /> },
+              { path: "/more", element: <MorePage /> },
+            ],
+          },
+        ],
+      },
+      { path: "*", element: <NotFoundPage /> },
     ],
   },
-  { path: "*", element: <NotFoundPage /> },
 ]);

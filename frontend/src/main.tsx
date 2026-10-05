@@ -11,10 +11,16 @@ import "./styles/global.css";
 import { OfflineBanner } from "./components/pwa/OfflineBanner";
 import { UpdatePrompt } from "./components/pwa/UpdatePrompt";
 import { startInstallListener } from "./services/pwa";
+import { reloadForNewBuild } from "./services/staleBuild";
 import { ThemeProvider } from "./theme/ThemeProvider";
 
 // Must start before React renders: browsers fire the install event very early.
 startInstallListener();
+
+// Vite reports when a code-split file of an older deploy can't be loaded: reload into the new build.
+window.addEventListener("vite:preloadError", (event) => {
+  if (reloadForNewBuild()) event.preventDefault();
+});
 
 const queryClient = new QueryClient({
   defaultOptions: {
