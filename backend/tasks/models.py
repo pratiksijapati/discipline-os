@@ -52,3 +52,23 @@ class Task(TimeStampedModel):
     @property
     def is_open(self) -> bool:
         return self.status in self.OPEN_STATUSES
+
+
+class DailyFocus(TimeStampedModel):
+    """
+    "If I finish only ONE important thing today, it's this." At most one per day.
+    Different from a Goal (long-term) and lighter than a Task (no due date, no priority).
+    """
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="daily_focuses")
+    date = models.DateField()
+    title = models.CharField(max_length=200)
+    completed = models.BooleanField(default=False)
+    completed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-date"]
+        constraints = [models.UniqueConstraint(fields=["user", "date"], name="one_focus_per_user_per_day")]
+
+    def __str__(self):
+        return f"{self.date}: {self.title}"

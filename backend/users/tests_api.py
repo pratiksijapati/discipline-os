@@ -111,6 +111,13 @@ class AuthApiTests(APITestCase):
         res = self.client.post(reverse("auth-refresh"), {"refresh": old_refresh}, format="json")
         self.assertEqual(res.status_code, 401)
 
+    def test_refresh_for_a_deleted_account_is_401_not_a_crash(self):
+        refresh = self.login().data["refresh"]
+        User.objects.get(email="pratik@example.com").delete()
+        res = self.client.post(reverse("auth-refresh"), {"refresh": refresh}, format="json")
+        self.assertEqual(res.status_code, 401)
+        self.assertIn("log in again", res.data["detail"])
+
     def test_logout_blacklists_refresh(self):
         refresh = self.login().data["refresh"]
         res = self.client.post(reverse("auth-logout"), {"refresh": refresh}, format="json")

@@ -7,7 +7,7 @@ from core.testing import AuthedAPITestCase, frozen_local_time
 from goals.models import Goal
 from habits.models import Habit
 from planner.models import Routine, RoutineItem
-from tasks.models import Task
+from tasks.models import DailyFocus, Task
 from workouts.models import Exercise, PlanExercise, WorkoutPlan
 
 from .models import DailyScore
@@ -136,6 +136,27 @@ class ScoringTests(AuthedAPITestCase):
         self.assertIsNone(max_possible(None, breakdown, is_final=False))
         # Rows stored before max_ratio existed count as fully reachable.
         self.assertEqual(max_possible(10, [{"applicable": True, "weight": 50, "ratio": 0.2}], is_final=False), 100)
+
+    def test_focus_alone_counts_as_the_important_part(self):
+        DailyFocus.objects.create(user=self.user, date=MON, title="Ship the API")
+        with frozen_local_time(2026, 10, 5, 9):
+            part = next(c for c in self.score()["breakdown"] if c["key"] == "important_tasks")
+        self.assertTrue(part["applicable"])
+        self.assertEqual((part["ratio"], part["detail"]), (0, "Today's focus is still open"))
+        DailyFocus.objects.filter(user=self.user).update(completed=True)
+        with frozen_local_time(2026, 10, 5, 10):
+            part = next(c for c in self.score()["breakdown"] if c["key"] == "important_tasks")
+        self.assertEqual(part["ratio"], 1)
+
+    def test_focus_joins_the_important_tasks(self):
+        self.setup_full_system()  # one high-priority task due today
+        DailyFocus.objects.create(user=self.user, date=MON, title="Ship the API", completed=True)
+        with frozen_local_time(2026, 10, 5, 9):
+            data = self.client.get(reverse("dashboard-today")).data
+        part = next(c for c in data["score"]["breakdown"] if c["key"] == "important_tasks")
+        self.assertEqual((part["ratio"], part["detail"]), (0.5, "1/2 incl. today's focus"))
+        self.assertEqual(data["focus"]["title"], "Ship the API")
+        self.assertEqual(data["summary"]["focus"], {"title": "Ship the API", "completed": True})
 
     def test_rest_day_does_not_count_workout(self):
         self.setup_full_system()

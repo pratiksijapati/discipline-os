@@ -104,8 +104,10 @@ function NowBody({ data, onStatus, onOpen, onMove }: NowNextProps) {
     );
   }
 
-  // Nothing scheduled right now.
+  // Nothing scheduled right now: suggest the day's focus first, then the most important task.
+  const focusOpen = data.focus && !data.focus.completed ? data.focus.title : null;
   const task = topTask(data.tasks, data.date);
+  const suggestion = focusOpen ?? task?.title ?? null;
   const hour = Number(data.now.slice(11, 13));
 
   if (next) {
@@ -113,7 +115,7 @@ function NowBody({ data, onStatus, onOpen, onMove }: NowNextProps) {
       <Headline
         icon={<Coffee size={24} />}
         title={`You're free until ${formatTime(next.start_time)}`}
-        sub={task ? `Good time for: ${task.title}` : "A good moment to rest or get ahead."}
+        sub={suggestion ? `Good time for: ${suggestion}` : "A good moment to rest or get ahead."}
       />
     );
   }

@@ -133,9 +133,17 @@ def _important_tasks(day, snap: DaySnapshot) -> Part:
     due = [t for t in snap.tasks if t.due_date == day and t.status != Task.Status.SKIPPED]
     important = [t for t in due if t.priority in ("high", "critical")]
     pool, noun = (important, "important tasks") if important else (due, "tasks")
+    focus = snap.focus
+    if focus and not pool:
+        return Part(True, 1.0 if focus.completed else 0.0, "Today's focus done" if focus.completed else "Today's focus is still open")
     if pool:
         done = sum(1 for t in pool if t.status == Task.Status.COMPLETED)
-        return Part(True, done / len(pool), f"{done}/{len(pool)} {noun}")
+        total = len(pool)
+        if focus:
+            # Today's focus counts as one more important item.
+            done, total = done + int(focus.completed), total + 1
+            return Part(True, done / total, f"{done}/{total} incl. today's focus")
+        return Part(True, done / total, f"{done}/{total} {noun}")
 
     # No tasks today: the day's plan counts instead.
     plan = [i for i in snap.schedule if i.status != ScheduleItem.Status.SKIPPED]

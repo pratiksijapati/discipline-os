@@ -11,6 +11,7 @@ import { Fab } from "../components/ui/Fab";
 import { Sheet } from "../components/ui/Sheet";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { ScoreChip } from "../modules/discipline/components/ScoreChip";
+import { FocusCard } from "../modules/focus/components/FocusCard";
 import { ScheduleItemDetails, type ItemDetailsView } from "../modules/schedule/components/ScheduleItemDetails";
 import { useSetItemStatus } from "../modules/schedule/hooks";
 import type { ScheduleItem } from "../modules/schedule/types";
@@ -59,6 +60,8 @@ export function TodayPage() {
           onOpen={openItem}
           onMove={(item) => setOpened({ item, view: "move" })}
         />
+
+        <FocusCard focus={data.focus} />
 
         <ReviewCard data={data} />
 

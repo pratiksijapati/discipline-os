@@ -19,6 +19,7 @@ function Answer({ label, text }: { label: string; text: string }) {
 /** The day in a few plain lines — only what was actually part of the day. */
 function dayLines(stats: DayStats): Array<[string, string]> {
   const lines: Array<[string, string]> = [];
+  if (stats.focus) lines.push(["Today's focus", stats.focus.completed ? "Done ✓" : "Still open"]);
   if (stats.tasks.total > 0) lines.push(["Tasks completed", `${stats.tasks.completed} / ${stats.tasks.total}`]);
   if (stats.habits.total > 0) lines.push(["Habits", `${stats.habits.completed} / ${stats.habits.total}`]);
   if (stats.workout_done) lines.push(["Workout", "Completed ✓"]);

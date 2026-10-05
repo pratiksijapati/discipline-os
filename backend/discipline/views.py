@@ -10,7 +10,7 @@ from goals.serializers import GoalSerializer
 from habits.serializers import serialize_card
 from planner.serializers import ScheduleItemSerializer
 from reflections.models import DailyReflection
-from tasks.serializers import TaskSerializer
+from tasks.serializers import DailyFocusSerializer, TaskSerializer
 
 from . import analytics, engine, scoring
 from .models import DailyScore
@@ -51,6 +51,7 @@ class TodayDashboardView(APIView):
                 "routine": snap.routine,
                 "workout": snap.workout,
                 "main_goal": GoalSerializer(main_goal, context=context).data if main_goal else None,
+                "focus": DailyFocusSerializer(snap.focus, context=context).data if snap.focus else None,
                 "reflection": {
                     "completed": bool(reflection and reflection.is_completed),
                     "day_rating": reflection.day_rating if reflection else None,

@@ -13,7 +13,7 @@ from planner.models import ScheduleItem
 from planner.routines import default_routine, progress_for_day
 from planner.services import ensure_occurrences
 from planner.status import MISSED, display_status, is_happening_now
-from tasks.models import Task
+from tasks.models import DailyFocus, Task
 from tasks.selectors import today_tasks, with_display_order
 from workouts.models import WorkoutSession
 from workouts.services import workout_today
@@ -27,6 +27,8 @@ class DaySnapshot:
     tasks: list[Task]
     habit_cards: list[dict]
     routine: dict
+    # Today's one most important thing, if the user set one.
+    focus: DailyFocus | None
     summary: dict
 
 
@@ -47,7 +49,7 @@ def pick_current_and_next(items: list[ScheduleItem], now_time: time):
     return current, next(upcoming, None)
 
 
-def _summarize(items, tasks, habit_cards, routine, day, now_time, workout_done: bool) -> dict:
+def _summarize(items, tasks, habit_cards, routine, day, now_time, workout_done: bool, focus: DailyFocus | None) -> dict:
     statuses = [display_status(i, day, now_time) for i in items]
     sched_done = statuses.count(ScheduleItem.Status.COMPLETED)
     sched_total = len(items) - statuses.count(ScheduleItem.Status.SKIPPED)
@@ -75,6 +77,7 @@ def _summarize(items, tasks, habit_cards, routine, day, now_time, workout_done: 
         "habits": {"completed": habit_done, "total": len(due_habits)},
         "routine": {"completed": routine["completed"], "total": routine["total"]},
         "workout_done": workout_done,
+        "focus": {"title": focus.title, "completed": focus.completed} if focus else None,
         # Simple completion %, until the Discipline Score engine arrives in Phase 7.
         "progress": round(100 * done / total) if total else 0,
     }
@@ -90,6 +93,7 @@ def build_day(user, day: date, now_time: time) -> DaySnapshot:
     workout_done = WorkoutSession.objects.filter(
         user=user, date=day, status=WorkoutSession.Status.COMPLETED
     ).exists()
+    focus = DailyFocus.objects.filter(user=user, date=day).first()
     return DaySnapshot(
         day=day,
         now_time=now_time,
@@ -97,7 +101,8 @@ def build_day(user, day: date, now_time: time) -> DaySnapshot:
         tasks=tasks,
         habit_cards=habit_cards,
         routine=routine,
-        summary=_summarize(items, tasks, habit_cards, routine, day, now_time, workout_done),
+        focus=focus,
+        summary=_summarize(items, tasks, habit_cards, routine, day, now_time, workout_done, focus),
     )
 
 

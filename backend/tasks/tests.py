@@ -4,7 +4,7 @@ from django.urls import reverse
 
 from core.testing import AuthedAPITestCase, frozen_local_time
 
-from .models import Task
+from .models import DailyFocus, Task
 
 
 class TaskApiTests(AuthedAPITestCase):
@@ -51,3 +51,52 @@ class TaskApiTests(AuthedAPITestCase):
     def test_user_field_cannot_be_injected(self):
         created = self.create(user=self.other.id)
         self.assertEqual(Task.objects.get(id=created["id"]).user, self.user)
+
+
+class DailyFocusTests(AuthedAPITestCase):
+    def today(self):
+        return self.client.get(reverse("daily-focus-today")).data
+
+    def test_set_edit_complete_and_clear_todays_focus(self):
+        with frozen_local_time(2026, 10, 5, 8):
+            self.assertIsNone(self.today())
+            res = self.client.post(reverse("daily-focus-list"), {"title": "  Ship the dashboard API "}, format="json")
+            self.assertEqual(res.status_code, 201, res.data)
+            self.assertEqual((res.data["date"], res.data["title"]), ("2026-10-05", "Ship the dashboard API"))
+            url = reverse("daily-focus-detail", args=[res.data["id"]])
+
+            self.client.patch(url, {"title": "Ship the API"}, format="json")
+            done = self.client.patch(url, {"completed": True}, format="json").data
+            self.assertTrue(done["completed"])
+            self.assertIsNotNone(done["completed_at"])
+            self.assertEqual(self.today()["title"], "Ship the API")
+
+            undone = self.client.patch(url, {"completed": False}, format="json").data
+            self.assertIsNone(undone["completed_at"])
+
+            self.assertEqual(self.client.delete(url).status_code, 204)
+            self.assertIsNone(self.today())
+
+    def test_only_one_focus_per_day(self):
+        with frozen_local_time(2026, 10, 5, 8):
+            self.client.post(reverse("daily-focus-list"), {"title": "First"}, format="json")
+            res = self.client.post(reverse("daily-focus-list"), {"title": "Second"}, format="json")
+            self.assertEqual(res.status_code, 400)
+            self.assertIn("date", res.data["errors"])
+            # Another day is fine.
+            res = self.client.post(reverse("daily-focus-list"), {"title": "Tomorrow", "date": "2026-10-06"}, format="json")
+            self.assertEqual(res.status_code, 201)
+        self.assertEqual(DailyFocus.objects.filter(user=self.user).count(), 2)
+
+    def test_blank_title_is_rejected(self):
+        res = self.client.post(reverse("daily-focus-list"), {"title": "   "}, format="json")
+        self.assertIn("title", res.data["errors"])
+
+    def test_other_users_focus_is_invisible(self):
+        theirs = DailyFocus.objects.create(user=self.other, date=date(2026, 10, 5), title="Theirs")
+        url = reverse("daily-focus-detail", args=[theirs.id])
+        self.assertEqual(self.client.get(url).status_code, 404)
+        self.assertEqual(self.client.patch(url, {"completed": True}, format="json").status_code, 404)
+        with frozen_local_time(2026, 10, 5, 8):
+            self.assertIsNone(self.today())
+
