@@ -2,7 +2,7 @@
 
 How the system is built, how to run it locally, and the design decisions behind it.
 For what the app does from a user's point of view, see the [User Guide](USER_GUIDE.md).
-For going live, see [DEPLOY.md](../DEPLOY.md).
+For going live and keeping it running, see the [Deployment Guide](DEPLOYMENT_GUIDE.md).
 
 ---
 
@@ -19,8 +19,9 @@ For going live, see [DEPLOY.md](../DEPLOY.md).
 9. [Frontend](#9-frontend)
 10. [Key design decisions](#10-key-design-decisions)
 11. [Testing and quality checks](#11-testing-and-quality-checks)
-12. [How it was developed](#12-how-it-was-developed)
-13. [Known limitations and ideas](#13-known-limitations-and-ideas)
+12. [Day-to-day development workflow](#12-day-to-day-development-workflow)
+13. [How it was developed](#13-how-it-was-developed)
+14. [Known limitations and ideas](#14-known-limitations-and-ideas)
 
 ---
 
@@ -36,6 +37,9 @@ It is a classic two-part web system:
 - a **Django REST Framework** JSON API backed by **PostgreSQL**, with JWT authentication.
 
 Every record belongs to one user; the API never returns another user's data.
+
+**Live:** app https://discipline-os-omega.vercel.app · API https://discipline-os-api-q4ut.onrender.com
+· code https://github.com/pratiksijapati/discipline-os
 
 ---
 
@@ -123,9 +127,9 @@ discipline-os/
 │   │   └── utils/         date/time/duration helpers
 │   ├── vite.config.ts     PWA manifest + Workbox config
 │   └── vercel.json        SPA rewrites + cache headers
-├── docs/                  this guide and the user guide
+├── docs/                  USER_GUIDE, DEVELOPER_GUIDE (this file), DEPLOYMENT_GUIDE
 ├── render.yaml            Render blueprint (API)
-└── DEPLOY.md              production setup steps
+└── README.md              project overview
 ```
 
 Each backend app follows the same shape: `models.py`, `serializers.py`, `views.py`, `urls.py`,
@@ -204,7 +208,7 @@ npm run dev                          # http://localhost:5173
 | `DATABASE_URL` | `postgres://user:pass@host:5432/db` (Neon adds `?sslmode=require`) |
 | `DB_CONN_MAX_AGE` | Persistent connection seconds (default 60) |
 | `DB_DISABLE_SERVER_SIDE_CURSORS` | `True` behind Neon's transaction-mode pooler |
-| `CORS_ALLOWED_ORIGINS` | Frontend origin(s) allowed to call the API |
+| `CORS_ALLOWED_ORIGINS` | Frontend origin(s) allowed to call the API (spaces and trailing `/` are stripped) |
 | `CSRF_TRUSTED_ORIGINS` | For the admin site (Render origin added automatically) |
 | `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` / `VAPID_SUBJECT` | Web Push keys; empty = push disabled |
 | `REMINDER_CRON_SECRET` | Enables `POST /api/notifications/run/` for an external cron |
@@ -457,7 +461,93 @@ Each phase was also verified in a real browser at phone size, in light and dark 
 
 ---
 
-## 12. How it was developed
+## 12. Day-to-day development workflow
+
+The app is live, and every push to `main` deploys automatically
+(Vercel for `frontend/`, Render for `backend/`). So treat `main` as production.
+
+### Making a change
+
+1. **Start both servers locally** (two terminals):
+
+   ```powershell
+   cd backend;  .venv\Scripts\python.exe manage.py runserver
+   cd frontend; npm run dev
+   ```
+
+   Local development uses your **local** PostgreSQL and `frontend/.env`
+   (`VITE_API_URL=http://localhost:8000/api`), never the live database.
+
+2. **Make the change** following the existing patterns:
+   - backend: model → serializer → view → `urls.py` → tests in the app's `tests.py`;
+   - frontend: `modules/<feature>/api.ts` → `hooks.ts` → components → page.
+
+3. **If you changed a model**, create the migration and commit it:
+
+   ```powershell
+   .venv\Scripts\python.exe manage.py makemigrations
+   .venv\Scripts\python.exe manage.py migrate
+   ```
+
+   Render applies committed migrations to Neon during its next build.
+   Prefer **additive** changes (new nullable fields or fields with defaults); the old code keeps
+   running against the new schema for the minute the build takes.
+
+4. **Check before pushing:**
+
+   ```powershell
+   cd backend;  .venv\Scripts\python.exe manage.py test --noinput
+   cd frontend; npx tsc -b; npm run lint; npm run build
+   ```
+
+5. **Try it in the browser** at phone size (DevTools device mode), in light and dark mode.
+
+6. **Commit and push:**
+
+   ```powershell
+   git add -A
+   git commit -m "Short description of the change"
+   git push
+   ```
+
+7. **Watch the deploy:** Vercel → Deployments, Render → Events. Then open the live app;
+   installed phones show **Update available**.
+
+### Bigger or risky changes
+
+Work on a branch instead of `main`:
+
+```powershell
+git switch -c feature/my-change
+# ...commit as usual...
+git push -u origin feature/my-change
+```
+
+Vercel builds a **preview URL** for every branch, so you can try the frontend before merging.
+(Previews call the live API, so the API's `CORS_ALLOWED_ORIGINS` would need the preview address
+to log in there.) When happy, merge into `main`:
+
+```powershell
+git switch main
+git merge feature/my-change
+git push
+```
+
+### Adding a setting or secret
+
+1. Read it in `backend/config/settings.py` with `env(...)` and a safe default.
+2. Add it to `backend/.env.example` (no real value) and to your local `.env`.
+3. On Render: add it under **Environment** (or in `render.yaml` with `sync: false` if it's secret).
+4. Frontend settings must start with `VITE_`, are public, and need a Vercel **Redeploy** after changing.
+
+### If a deploy breaks production
+
+Roll back first (Render **Events → Rollback**, Vercel **Deployments → Instant Rollback**), then fix
+locally and push again. Details are in the [Deployment Guide](DEPLOYMENT_GUIDE.md#11-logs-rollback-and-monitoring).
+
+---
+
+## 13. How it was developed
 
 The system was built in 12 phases, each delivered as a backend commit (models, API, tests) followed
 by a frontend commit (screens), and verified before moving on.
@@ -479,12 +569,35 @@ by a frontend commit (screens), and verified before moving on.
 
 `git log` shows one or two commits per phase in this order.
 
+**Going live (Phase 12)** happened in this order:
+1. production settings (gunicorn, whitenoise, HTTPS/HSTS, Neon pooler support), `render.yaml`
+   and `vercel.json`;
+2. the code pushed to GitHub;
+3. Neon database (Singapore) → Render API (Singapore, from the blueprint, migrations at build)
+   → Vercel app (root `frontend`, `VITE_API_URL`);
+4. CORS connecting the two;
+5. a final fix so copy-pasted origins with stray spaces or slashes still work.
+
+Each step was checked from the outside (health check, HTTPS redirect, admin static files, the
+built app containing the right API address, CORS headers). The step-by-step record is the
+[Deployment Guide](DEPLOYMENT_GUIDE.md).
+
+### Working method
+
+- **Backend first, then frontend**, for every phase. Each phase ended green: all tests,
+  type-check, lint and a browser walkthrough.
+- **Small, focused commits** with a clear message, one or two per phase.
+- **Secrets never in git:** `.env` is ignored, examples only. The history was scanned before the
+  first push.
+- **Real-device features** (push notifications, camera, install) were built with honest fallbacks
+  for browsers that can't do them, then confirmed on a phone after deployment.
+
 ---
 
-## 13. Known limitations and ideas
+## 14. Known limitations and ideas
 
 - **Free hosting:** Render sleeps without traffic (the reminder cron keeps it awake); Neon's free
-  compute allowance should be watched — see DEPLOY.md.
+  compute allowance should be watched — see the [Deployment Guide](DEPLOYMENT_GUIDE.md#12-free-plan-limits).
 - **Push on iPhone** requires iOS 16.4+ and the app installed to the Home Screen.
 - **Offline** covers the app shell only; changes can't be made without a connection.
 - **Motion detection** measures movement, not specific exercises — it can't count squats.

@@ -35,7 +35,8 @@ It is designed for your phone first, works on a laptop too, and can be installed
 
 ### Create your account
 
-1. Open the app's web address.
+1. Open **https://discipline-os-omega.vercel.app**. The very first visit after a quiet
+   period can take up to a minute while the server wakes up.
 2. Tap **Create account**, then enter your first name, email and a password (at least 8 characters).
 3. Your time zone is taken from your device automatically. It decides when your day starts and
    ends — you can check or change it later in **Settings → Profile**.

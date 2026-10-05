@@ -6,6 +6,8 @@ Discipline OS is a mobile-first, installable web app for personal discipline. It
 schedule, tasks, habits, workouts, goals and a short night review into one place, and turns them
 into a daily **discipline score** with streaks and progress charts.
 
+**Live app:** https://discipline-os-omega.vercel.app
+
 ## Features
 
 - **Today** — what's happening now and next, your plan, habits, tasks and live score in one screen
@@ -33,7 +35,7 @@ Django 5.2 · Django REST Framework · SimpleJWT · PostgreSQL · Web Push (VAPI
 |---|---|
 | [User Guide](docs/USER_GUIDE.md) | Using the app: every feature, step by step |
 | [Developer Guide](docs/DEVELOPER_GUIDE.md) | Architecture, local setup, API, design decisions, how it was built |
-| [DEPLOY.md](DEPLOY.md) | Putting it online (Neon, Render, Vercel, cron-job.org) |
+| [Deployment Guide](docs/DEPLOYMENT_GUIDE.md) | Putting it online, updating it, logs, rollback, troubleshooting |
 
 ## Quick start (local)
 
