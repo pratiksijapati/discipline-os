@@ -113,5 +113,6 @@ def score_payload(user, score: DailyScore) -> dict:
         "rating": scoring.rating_for(score.score),
         "target": settings.daily_target_score,
         "is_final": score.is_final,
+        "max_possible": scoring.max_possible(score.score, score.breakdown, score.is_final),
         "breakdown": score.breakdown,
     }

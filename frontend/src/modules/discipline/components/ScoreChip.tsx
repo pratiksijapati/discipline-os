@@ -26,7 +26,7 @@ export function ScoreChip({ score, streaks }: { score: DayScore; streaks: Streak
         <ChevronRight size={16} aria-hidden className={styles.chevron} />
       </button>
 
-      <Sheet open={open} onClose={() => setOpen(false)} title={value === null ? "Discipline score" : `Score ${value} / 100`}>
+      <Sheet open={open} onClose={() => setOpen(false)} title="Today's discipline score">
         <ScoreBreakdown score={score} streaks={streaks} />
       </Sheet>
     </>

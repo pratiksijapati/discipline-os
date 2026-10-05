@@ -11,7 +11,7 @@ from tasks.models import Task
 from workouts.models import Exercise, PlanExercise, WorkoutPlan
 
 from .models import DailyScore
-from .scoring import rating_for
+from .scoring import max_possible, rating_for
 
 KTM = ZoneInfo("Asia/Kathmandu")
 MON = date(2026, 10, 5)
@@ -94,6 +94,48 @@ class ScoringTests(AuthedAPITestCase):
         # 7.5 (wake) + 3.33 (routine) out of 100 applicable points
         self.assertEqual(data["score"], 11)
         self.assertEqual(data["rating"], "Reset tomorrow")
+
+    def test_everything_still_possible_before_the_wake_deadline(self):
+        self.setup_full_system()
+        with frozen_local_time(2026, 10, 5, 6, 0):
+            data = self.score()
+        self.assertEqual(data["score"], 0)
+        self.assertEqual(data["max_possible"], 100)
+
+    def test_missed_wake_deadline_caps_wake_at_half(self):
+        self.setup_full_system()
+        with frozen_local_time(2026, 10, 5, 9, 0):
+            data = self.score()
+        wake = next(c for c in data["breakdown"] if c["key"] == "wake_up")
+        self.assertEqual(wake["max_ratio"], 0.5)
+        self.assertIn("half points", wake["detail"])
+        # The challenge was never used, so the hint points at the routine step.
+        self.assertIn("Tick", wake["detail"])
+        # 7.5 (late wake) + 85 (everything else) = 92.5 → 92
+        self.assertEqual(data["max_possible"], 92)
+
+    def test_max_possible_after_a_late_wake_tick(self):
+        self.setup_full_system()
+        self.tick("Wake up", 7, 30)
+        with frozen_local_time(2026, 10, 5, 7, 31):
+            data = self.score()
+        self.assertEqual(data["score"], 11)
+        self.assertEqual(data["max_possible"], 92)
+
+    def test_perfect_day_has_nothing_left_to_reach(self):
+        self.setup_full_system()
+        self.do_everything()
+        with frozen_local_time(2026, 10, 5, 22):
+            self.client.post(reverse("reflection-complete"), {"day_rating": 5}, format="json")
+            data = self.score()
+        self.assertEqual(data["max_possible"], 100)
+
+    def test_max_possible_of_a_finished_day_is_its_score(self):
+        breakdown = [{"applicable": True, "weight": 50, "ratio": 0.2, "max_ratio": 1.0}]
+        self.assertEqual(max_possible(10, breakdown, is_final=True), 10)
+        self.assertIsNone(max_possible(None, breakdown, is_final=False))
+        # Rows stored before max_ratio existed count as fully reachable.
+        self.assertEqual(max_possible(10, [{"applicable": True, "weight": 50, "ratio": 0.2}], is_final=False), 100)
 
     def test_rest_day_does_not_count_workout(self):
         self.setup_full_system()

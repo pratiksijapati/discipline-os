@@ -53,6 +53,8 @@ class Part:
     applicable: bool
     ratio: float = 0.0
     detail: str = ""
+    # The most this part can still reach today (1.0 = everything is still possible).
+    max_ratio: float = 1.0
 
 
 NOT_TRACKED = Part(applicable=False, detail="Not tracked today")
@@ -79,11 +81,12 @@ def _wake_up(user, day, snap: DaySnapshot, settings, tz) -> Part:
                 ts.astimezone(tz).time()
                 for ts in RoutineLog.objects.filter(item__in=steps, date=day).values_list("completed_at", flat=True)
             ]
+    challenge_in_use = False
     if settings.wake_challenge_enabled:
         challenges = WakeChallengeSession.objects.filter(user=user, status=WakeChallengeSession.Status.COMPLETED)
         # The challenge counts once you've started using it — new accounts aren't scored on it.
         if challenges.filter(date__lte=day).exists():
-            tracked = True
+            tracked = challenge_in_use = True
         confirmed += [ts.astimezone(tz).time() for ts in challenges.filter(date=day).values_list("completed_at", flat=True)]
     wake_items = [i for i in snap.schedule if "wake" in i.title.lower()]
     if wake_items:
@@ -97,12 +100,15 @@ def _wake_up(user, day, snap: DaySnapshot, settings, tz) -> Part:
     if not tracked:
         return NOT_TRACKED
     if not confirmed:
-        how = "Finish the wake-up challenge" if settings.wake_challenge_enabled else "Tick “Wake up”"
-        return Part(True, 0.0, f"{how} by {_clock(deadline)}")
+        how = "Finish the wake-up challenge" if challenge_in_use else "Tick “Wake up”"
+        if snap.now_time <= deadline:
+            return Part(True, 0.0, f"{how} by {_clock(deadline)}")
+        # Past the deadline: confirming late still earns half.
+        return Part(True, 0.0, f"{how} for half points (on time was {_clock(deadline)})", max_ratio=0.5)
     first = min(confirmed)
     if first <= deadline:
-        return Part(True, 1.0, f"Up at {_clock(first)}")
-    return Part(True, 0.5, f"Up at {_clock(first)} (after {_clock(deadline)})")
+        return Part(True, 1.0, f"Up at {_clock(first)}", max_ratio=1.0)
+    return Part(True, 0.5, f"Up at {_clock(first)} (after {_clock(deadline)})", max_ratio=0.5)
 
 
 def _morning_routine(snap: DaySnapshot) -> Part:
@@ -196,6 +202,7 @@ def compute(user, day: date, snap: DaySnapshot) -> tuple[int | None, list[dict]]
                 "applicable": applicable,
                 "ratio": round(part.ratio, 3) if applicable else 0,
                 "points": round(weight * part.ratio, 1) if applicable else 0,
+                "max_ratio": round(max(part.ratio, part.max_ratio), 3) if applicable else 0,
                 "detail": part.detail,
             }
         )
@@ -207,3 +214,14 @@ def compute(user, day: date, snap: DaySnapshot) -> tuple[int | None, list[dict]]
     total = sum(c["weight"] for c in breakdown if c["applicable"])
     earned = sum(c["weight"] * c["ratio"] for c in breakdown if c["applicable"])
     return (round(100 * earned / total) if total else None), breakdown
+
+
+def max_possible(score: int | None, breakdown: list[dict], is_final: bool) -> int | None:
+    """Highest score still reachable today. A finished day can't change, so it's the score itself."""
+    if score is None or is_final:
+        return score
+    applicable = [c for c in breakdown if c["applicable"]]
+    total = sum(c["weight"] for c in applicable)
+    # Rows saved before max_ratio existed: assume everything is still possible.
+    reachable = sum(c["weight"] * c.get("max_ratio", 1.0) for c in applicable)
+    return max(score, round(100 * reachable / total)) if total else score

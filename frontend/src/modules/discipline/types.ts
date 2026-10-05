@@ -15,6 +15,8 @@ export interface ScoreComponent {
   applicable: boolean;
   ratio: number;
   points: number;
+  /** The most this part can still reach today (0–1). Missing on scores saved before it existed. */
+  max_ratio?: number;
   detail: string;
 }
 
@@ -27,6 +29,8 @@ export interface DayScore {
   rating: ScoreRating | null;
   target: number;
   is_final: boolean;
+  /** Highest score still reachable today; equals `score` once the day is final. */
+  max_possible?: number | null;
   breakdown: ScoreComponent[];
 }
 

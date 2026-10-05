@@ -4,35 +4,56 @@ import { STREAK_LABELS } from "../constants";
 import type { DayScore, Streaks } from "../types";
 import styles from "./Score.module.css";
 
-/** Sheet content: where today's points came from, and all streaks. */
+/** One encouraging line about what's still possible — never a judgement. */
+function reachLine(score: DayScore): string | null {
+  if (score.score === null) return "Add a routine, habits or tasks to start scoring your day.";
+  if (score.is_final) return "Final score for this day.";
+  const max = score.max_possible ?? 100;
+  if (max <= score.score) return "You've earned everything available today ✓";
+  return `You can still reach ${max} today.`;
+}
+
+/** Sheet content: today's score, what's still reachable, each part's points, and all streaks. */
 export function ScoreBreakdown({ score, streaks }: { score: DayScore; streaks: Streaks }) {
+  const counted = score.breakdown.filter((c) => c.applicable);
   const skipped = score.breakdown.filter((c) => !c.applicable);
+  const note = reachLine(score);
 
   return (
     <div className={styles.breakdown}>
-      <ul className={styles.components}>
-        {score.breakdown.map((c) => (
-          <li key={c.key} className={cn(styles.component, !c.applicable && styles.skipped)}>
-            <div className={styles.componentTop}>
-              <span className={styles.componentLabel}>{c.label}</span>
-              <span className={styles.componentPoints}>
-                {c.applicable ? `${Math.round(c.points)} / ${c.weight}` : "—"}
-              </span>
-            </div>
-            {c.applicable && (
-              <div className={styles.componentBar} aria-hidden>
-                <span style={{ width: `${Math.round(c.ratio * 100)}%` }} />
-              </div>
-            )}
-            <span className={styles.componentDetail}>{c.detail}</span>
-          </li>
-        ))}
-      </ul>
+      <div className={styles.summary}>
+        <p className={styles.summaryScore}>
+          {score.score ?? "—"} <span>/ 100</span>
+        </p>
+        {note && <p className={styles.summaryNote}>{note}</p>}
+      </div>
+
+      {counted.length > 0 && (
+        <ul className={styles.components}>
+          {counted.map((c) => {
+            const full = c.ratio >= 1;
+            return (
+              <li key={c.key} className={styles.component}>
+                <div className={styles.componentTop}>
+                  <span className={styles.componentLabel}>{c.label}</span>
+                  <span className={cn(styles.componentPoints, full && styles.full)}>
+                    {Math.round(c.points)} / {c.weight}
+                    {full && " ✓"}
+                  </span>
+                </div>
+                <div className={styles.componentBar} aria-hidden>
+                  <span style={{ width: `${Math.round(c.ratio * 100)}%` }} />
+                </div>
+                <span className={styles.componentDetail}>{c.detail}</span>
+              </li>
+            );
+          })}
+        </ul>
+      )}
 
       {skipped.length > 0 && (
         <p className={styles.note}>
-          {skipped.map((c) => c.label).join(", ")} {skipped.length === 1 ? "isn't" : "aren't"} tracked today, so your
-          score is out of the rest — scaled to 100.
+          Not counted today: {skipped.map((c) => c.label).join(", ")}. Your score is out of the rest, scaled to 100.
         </p>
       )}
 
