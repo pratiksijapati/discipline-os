@@ -10,6 +10,7 @@ from reflections.models import DailyReflection
 from tasks.models import Task
 from workouts.models import WorkoutSession
 
+from .analytics import weekly_insight
 from .models import DailyScore
 
 KTM = ZoneInfo("Asia/Kathmandu")
@@ -77,6 +78,15 @@ class AnalyticsTests(AuthedAPITestCase):
         # Wake-up is already mentioned, so it isn't repeated as the "strongest area".
         self.assertFalse(any("Strongest area: wake" in s for s in review["went_well"]))
         self.assertEqual(review["your_notes"], ["Sleep earlier"])
+        # THIS WEEK card: workouts hit the target (4/4 = 100%) and beat wake-up (93%).
+        self.assertEqual(
+            review["insight"],
+            {
+                "strongest": {"key": "workout", "label": "Workout", "rate": 100, "detail": "4 / 4 workouts"},
+                "needs_attention": {"key": "morning_routine", "label": "Morning routine", "rate": 40, "detail": "40% of routine steps done"},
+                "focus": "Finish your morning routine — make it shorter if you need to.",
+            },
+        )
 
     def test_progress_range(self):
         self.seed_last_week()
@@ -107,6 +117,7 @@ class AnalyticsTests(AuthedAPITestCase):
         self.assertIsNone(data["score"]["average"])
         self.assertIsNone(data["tasks"]["rate"])
         self.assertIsNone(review["needs_attention"])
+        self.assertEqual(review["insight"], {"strongest": None, "needs_attention": None, "focus": None})
         self.assertTrue(review["is_current"])
 
     def test_other_users_data_never_counts(self):
@@ -117,3 +128,26 @@ class AnalyticsTests(AuthedAPITestCase):
             review = self.client.get(reverse("progress-weekly"), {"offset": 1}).data
         self.assertEqual(review["tasks"]["total"], 5)
         self.assertEqual(review["score"]["average"], 73)
+
+
+class WeeklyInsightRuleTests(AuthedAPITestCase):
+    def stats(self, rate, tracked=5, success=3):
+        return {"rate": rate, "tracked_days": tracked, "success_days": success}
+
+    def test_unfinished_week_does_not_judge_workouts_yet(self):
+        components = {"habits": self.stats(90), "important_tasks": self.stats(58)}
+        insight = weekly_insight(components, workouts=1, target=4, week_done=False)
+        self.assertEqual(insight["strongest"]["key"], "habits")
+        self.assertEqual(insight["needs_attention"]["key"], "important_tasks")
+        self.assertEqual(insight["needs_attention"]["detail"], "58% completed")
+        self.assertEqual(insight["focus"], "Reduce unfinished important tasks.")
+        # Once the week is over, 1 of 4 workouts is what needs attention.
+        done = weekly_insight(components, workouts=1, target=4, week_done=True)
+        self.assertEqual((done["needs_attention"]["key"], done["needs_attention"]["detail"]), ("workout", "1 / 4 workouts"))
+
+    def test_one_area_is_never_both_strongest_and_weakest(self):
+        insight = weekly_insight({"habits": self.stats(75)}, workouts=0, target=0, week_done=True)
+        self.assertEqual(insight["strongest"]["key"], "habits")
+        self.assertIsNone(insight["needs_attention"])
+        self.assertEqual(insight["focus"], "Keep the same rhythm — it's working.")
+

@@ -35,6 +35,60 @@ FOCUS_ADVICE = {
 }
 
 
+# One short, plain line for the "This week" card; the longer advice above stays for detail.
+FOCUS_SHORT = {
+    "wake_up": "Wake up at the same time every day.",
+    "morning_routine": "Finish your morning routine — make it shorter if you need to.",
+    "workout": "Give your workouts a fixed time in your schedule.",
+    "important_tasks": "Reduce unfinished important tasks.",
+    "habits": "Do your hardest habit first thing in the day.",
+    "growth": "Make a little time for study or your goal.",
+    "reflection": "Close every day with the night review.",
+}
+
+
+def _area_detail(key: str, stats: dict, workouts: int, target: int) -> str:
+    """The real numbers behind an area, in words."""
+    if key == "workout":
+        return f"{workouts} / {target} workouts"
+    if key == "wake_up":
+        return f"On time {stats['success_days']} of {stats['tracked_days']} days"
+    if key == "growth":
+        return f"Progress on {stats['success_days']} of {stats['tracked_days']} days"
+    if key == "reflection":
+        return f"Reviewed {stats['success_days']} of {stats['tracked_days']} nights"
+    if key == "habits":
+        return f"{stats['rate']}% of habits done"
+    if key == "morning_routine":
+        return f"{stats['rate']}% of routine steps done"
+    return f"{stats['rate']}% completed"
+
+
+def weekly_insight(components: dict, workouts: int, target: int, week_done: bool) -> dict:
+    """
+    THIS WEEK: strongest area, the one that needs attention, and one focus for next week.
+    Deterministic, from the finished days' score parts. An area needs at least 2 tracked days.
+    Workouts are judged against the weekly target once the week is over (or the target is met).
+    """
+    rates = {k: s["rate"] for k, s in components.items() if s["rate"] is not None and s["tracked_days"] >= 2}
+    if target and (week_done or workouts >= target):
+        rates["workout"] = min(100, round(100 * workouts / target))
+    if not rates:
+        return {"strongest": None, "needs_attention": None, "focus": None}
+
+    def area(key: str) -> dict:
+        return {"key": key, "label": LABELS[key], "rate": rates[key], "detail": _area_detail(key, components.get(key, {}), workouts, target)}
+
+    ranked = sorted(rates, key=lambda k: rates[k])
+    strongest = ranked[-1] if rates[ranked[-1]] >= 70 else None
+    weakest = ranked[0] if rates[ranked[0]] < 80 and ranked[0] != strongest else None
+    return {
+        "strongest": area(strongest) if strongest else None,
+        "needs_attention": area(weakest) if weakest else None,
+        "focus": FOCUS_SHORT[weakest] if weakest else "Keep the same rhythm — it's working.",
+    }
+
+
 def _pct(part: float, whole: float) -> int | None:
     return round(100 * part / whole) if whole else None
 
@@ -243,4 +297,5 @@ def weekly_review(user, today: date, offset_weeks: int = 0) -> dict:
         "struggled": struggled,
         "focus_next_week": FOCUS_ADVICE[weakest[0]] if weakest else "Keep the same rhythm — it's working.",
         "your_notes": own_notes[-5:],
+        "insight": weekly_insight(components, workouts, settings.weekly_workout_target, week_done=end <= today),
     }

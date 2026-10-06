@@ -12,6 +12,7 @@ import { formatHours } from "../../../utils/duration";
 import { formatDay } from "../../../utils/time";
 import { RATING_TONE } from "../../discipline/constants";
 import { useWeeklyReview } from "../hooks";
+import type { WeeklyReview } from "../types";
 import styles from "./Progress.module.css";
 
 const WEEK_OPTIONS = [
@@ -70,6 +71,8 @@ export function WeeklyReviewView() {
         )}
       </section>
 
+      <InsightCard data={data} />
+
       <dl className={styles.grid}>
         <StatTile
           label="Wake-up"
@@ -105,17 +108,6 @@ export function WeeklyReviewView() {
         </section>
       )}
 
-      {data.needs_attention && (
-        <section className={cn(styles.card, styles.attention)} aria-labelledby="attention">
-          <h2 id="attention" className={styles.cardTitle}>
-            <CircleAlert size={18} aria-hidden /> Needs attention
-          </h2>
-          <p>
-            <strong>{data.needs_attention.label}</strong> — averaged {data.needs_attention.rate}%
-          </p>
-        </section>
-      )}
-
       <section className={styles.card} aria-labelledby="went-well">
         <h2 id="went-well" className={styles.cardTitle}>
           <ThumbsUp size={18} aria-hidden /> What went well
@@ -130,13 +122,6 @@ export function WeeklyReviewView() {
         <Bullets items={data.struggled} empty="Nothing stood out. Nice." />
       </section>
 
-      <section className={cn(styles.card, styles.focus)} aria-labelledby="focus">
-        <h2 id="focus" className={styles.cardTitle}>
-          <Sparkles size={18} aria-hidden /> Focus for next week
-        </h2>
-        <p>{data.focus_next_week}</p>
-      </section>
-
       {data.your_notes.length > 0 && (
         <section className={styles.card} aria-labelledby="notes">
           <h2 id="notes" className={styles.cardTitle}>
@@ -148,3 +133,56 @@ export function WeeklyReviewView() {
     </div>
   );
 }
+
+/** THIS WEEK: strongest area, what needs attention, one focus. Straight from the week's real data. */
+function InsightCard({ data }: { data: WeeklyReview }) {
+  const insight = data.insight;
+  if (!insight) return null;
+  const empty = !insight.strongest && !insight.needs_attention;
+
+  return (
+    <section className={cn(styles.card, styles.insight)} aria-labelledby="insight-heading">
+      <h2 id="insight-heading" className={styles.insightLabel}>
+        {data.is_current ? "This week" : "That week"}
+      </h2>
+      {empty ? (
+        <p className={styles.muted}>Finish a few days to see what's working and what needs attention.</p>
+      ) : (
+        <dl className={styles.insightList}>
+          {insight.strongest && (
+            <div>
+              <dt>
+                <ThumbsUp size={16} aria-hidden /> Strongest area
+              </dt>
+              <dd>
+                <strong>{insight.strongest.label}</strong> · {insight.strongest.detail}
+              </dd>
+            </div>
+          )}
+          {insight.needs_attention && (
+            <div>
+              <dt>
+                <CircleAlert size={16} aria-hidden /> Needs attention
+              </dt>
+              <dd>
+                <strong>{insight.needs_attention.label}</strong> · {insight.needs_attention.detail}
+              </dd>
+            </div>
+          )}
+          {insight.focus && (
+            <div>
+              <dt>
+                <Sparkles size={16} aria-hidden /> Suggested focus{data.is_current && " next week"}
+              </dt>
+              <dd>
+                <strong>{insight.focus}</strong>
+                {insight.needs_attention && <span className={styles.insightHow}>{data.focus_next_week}</span>}
+              </dd>
+            </div>
+          )}
+        </dl>
+      )}
+    </section>
+  );
+}
+

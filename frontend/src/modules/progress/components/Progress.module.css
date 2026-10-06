@@ -126,20 +126,42 @@
   color: var(--text-muted);
 }
 
-.attention {
-  border-color: color-mix(in srgb, var(--warning) 45%, var(--border));
+.insight {
+  gap: var(--space-3);
+  border-left: 4px solid var(--accent);
 }
 
-.attention .cardTitle {
-  color: var(--warning);
+.insightLabel {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-strong);
 }
 
-.attention p,
-.focus p {
-  margin: var(--space-2) 0;
+.insightList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin: 0;
 }
 
-.focus {
-  background: var(--accent-soft);
-  border-color: transparent;
+.insightList dt {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: 2px;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.insightList dd {
+  margin: 0;
+}
+
+.insightHow {
+  display: block;
+  margin-top: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
 }

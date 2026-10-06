@@ -59,5 +59,22 @@ export interface WeeklyReview {
   went_well: string[];
   struggled: string[];
   focus_next_week: string;
+  /** The "This week" card. Missing on older servers. */
+  insight?: WeeklyInsight;
   your_notes: string[];
 }
+
+export interface InsightArea {
+  key: string;
+  label: string;
+  rate: number;
+  /** The real numbers in words, e.g. "4 / 4 workouts" or "58% completed". */
+  detail: string;
+}
+
+export interface WeeklyInsight {
+  strongest: InsightArea | null;
+  needs_attention: InsightArea | null;
+  focus: string | null;
+}
+
