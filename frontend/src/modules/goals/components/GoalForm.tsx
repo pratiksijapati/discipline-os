@@ -19,12 +19,21 @@ const UNIT_PLACEHOLDER: Partial<Record<GoalMeasure, string>> = {
   currency: "NPR",
 };
 
-export function GoalForm({ goal, onDone }: { goal?: Goal; onDone: (saved: Goal) => void }) {
+export function GoalForm({
+  goal,
+  initialCategory,
+  onDone,
+}: {
+  goal?: Goal;
+  /** Pre-selects the category for a new goal (e.g. chosen in setup). */
+  initialCategory?: GoalCategory;
+  onDone: (saved: Goal) => void;
+}) {
   const { toast } = useToast();
   const save = useSaveGoal();
 
   const [title, setTitle] = useState(goal?.title ?? "");
-  const [category, setCategory] = useState<GoalCategory>(goal?.category ?? "other");
+  const [category, setCategory] = useState<GoalCategory>(goal?.category ?? initialCategory ?? "other");
   const [measure, setMeasure] = useState<GoalMeasure>(goal?.measure ?? "count");
   const [target, setTarget] = useState(goal ? String(goal.target_value) : "");
   const [unit, setUnit] = useState(goal?.unit ?? "");

@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Navigate, Outlet, useLocation } from "react-router";
 import { ConnectionProblem, FullScreenLoader } from "../components/StatusScreen";
 import { useAuth } from "./useAuth";
@@ -30,4 +31,14 @@ export function RedirectIfAuthenticated() {
     return <Navigate to={from && from !== "/login" ? from : "/today"} replace />;
   }
   return <Outlet />;
+}
+
+/**
+ * New accounts go through setup once. Only an explicit `false` counts: an older server
+ * that doesn't send the flag yet must never push existing users into the wizard.
+ */
+export function RequireOnboarding({ children }: { children?: ReactNode }) {
+  const { user } = useAuth();
+  if (user && user.settings.onboarding_completed === false) return <Navigate to="/welcome" replace />;
+  return children ?? <Outlet />;
 }

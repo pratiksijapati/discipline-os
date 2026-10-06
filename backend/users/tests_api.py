@@ -33,6 +33,18 @@ class AuthApiTests(APITestCase):
         self.assertEqual(res.data["user"]["timezone"], "Asia/Kathmandu")
         self.assertEqual(res.data["user"]["settings"]["theme"], "system")
 
+    def test_new_account_starts_setup_and_can_finish_it(self):
+        res = self.client.post(
+            reverse("auth-register"),
+            {"email": "fresh@example.com", "password": STRONG, "first_name": "Fresh"},
+            format="json",
+        )
+        self.assertFalse(res.data["user"]["settings"]["onboarding_completed"])
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {res.data['access']}")
+        res = self.client.patch(reverse("user-settings"), {"onboarding_completed": True}, format="json")
+        self.assertTrue(res.data["onboarding_completed"])
+        self.assertTrue(self.client.get(reverse("auth-me")).data["settings"]["onboarding_completed"])
+
     def test_register_duplicate_email_is_case_insensitive(self):
         res = self.client.post(
             reverse("auth-register"),

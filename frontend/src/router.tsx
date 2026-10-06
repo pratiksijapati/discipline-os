@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { createBrowserRouter, Navigate } from "react-router";
-import { RedirectIfAuthenticated, RequireAuth } from "./auth/routeGuards";
+import { RedirectIfAuthenticated, RequireAuth, RequireOnboarding } from "./auth/routeGuards";
 import { FullScreenLoader } from "./components/StatusScreen";
 import { AppShell } from "./layouts/AppShell";
 import { LoginPage } from "./pages/auth/LoginPage";
@@ -9,6 +9,7 @@ import {
   GrowthPage,
   HabitsPage,
   MorePage,
+  OnboardingPage,
   PrepareTomorrowPage,
   ProgressPage,
   ReflectionPage,
@@ -48,8 +49,21 @@ export const router = createBrowserRouter([
               </Suspense>
             ),
           },
+          // First-time setup, full screen.
           {
-            element: <AppShell />,
+            path: "/welcome",
+            element: (
+              <Suspense fallback={<FullScreenLoader />}>
+                <OnboardingPage />
+              </Suspense>
+            ),
+          },
+          {
+            element: (
+              <RequireOnboarding>
+                <AppShell />
+              </RequireOnboarding>
+            ),
             children: [
               { path: "/", element: <Navigate to="/today" replace /> },
               { path: "/today", element: <TodayPage /> },

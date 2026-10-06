@@ -30,4 +30,5 @@ export const WakePage = page(() => import("./WakePage").then((m) => m.WakePage))
 export const SettingsPage = page(() => import("./SettingsPage").then((m) => m.SettingsPage));
 export const MorePage = page(() => import("./MorePage").then((m) => m.MorePage));
 export const ProgressPage = page(() => import("./ProgressPage").then((m) => m.ProgressPage));
+export const OnboardingPage = page(() => import("./OnboardingPage").then((m) => m.OnboardingPage));
 export const PrepareTomorrowPage = page(() => import("./PrepareTomorrowPage").then((m) => m.PrepareTomorrowPage));

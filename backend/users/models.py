@@ -117,6 +117,10 @@ class UserSettings(TimeStampedModel):
         default=60, validators=[MinValueValidator(15), MaxValueValidator(600)]
     )
 
+    # ---------- First-time setup ----------
+    # New accounts see the setup wizard once; finishing or skipping it sets this.
+    onboarding_completed = models.BooleanField(default=False)
+
     class Meta:
         verbose_name = "user settings"
         verbose_name_plural = "user settings"

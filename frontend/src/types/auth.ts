@@ -16,6 +16,8 @@ export interface UserSettings {
   wake_challenge_enabled: boolean;
   wake_challenge_type: "dance" | "jumping_jacks" | "squats" | "math";
   wake_challenge_seconds: number;
+  /** False only for new accounts that haven't finished setup. Missing on older servers. */
+  onboarding_completed?: boolean;
   updated_at: string;
 }
 
@@ -72,5 +74,6 @@ export type SettingsUpdate = Partial<
     | "wake_challenge_enabled"
     | "wake_challenge_type"
     | "wake_challenge_seconds"
+    | "onboarding_completed"
   >
 >;

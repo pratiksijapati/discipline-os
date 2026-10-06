@@ -20,6 +20,7 @@ class UserSettingsSerializer(serializers.ModelSerializer):
             "wake_challenge_enabled",
             "wake_challenge_type",
             "wake_challenge_seconds",
+            "onboarding_completed",
             "updated_at",
         )
         read_only_fields = ("updated_at",)
