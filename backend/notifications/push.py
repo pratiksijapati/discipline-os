@@ -24,13 +24,16 @@ def _vapid():
     return Vapid.from_raw(settings.VAPID_PRIVATE_KEY.encode())
 
 
-def send_to_user(user, title: str, body: str, url: str = "/today", tag: str = "") -> int:
-    """Send to every device the user subscribed. Returns how many deliveries succeeded."""
+def send_to_user(user, title: str, body: str, url: str = "/today", tag: str = "", endpoint: str | None = None) -> int:
+    """Send to every device the user subscribed (or only `endpoint`). Returns how many deliveries succeeded."""
     if not is_configured():
         return 0
     payload = json.dumps({"title": title, "body": body, "url": url, "tag": tag or url})
     delivered = 0
-    for sub in PushSubscription.objects.filter(user=user):
+    subscriptions = PushSubscription.objects.filter(user=user)
+    if endpoint is not None:
+        subscriptions = subscriptions.filter(endpoint=endpoint)
+    for sub in subscriptions:
         try:
             webpush(
                 subscription_info=sub.as_subscription_info(),

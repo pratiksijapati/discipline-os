@@ -10,5 +10,7 @@ export const notificationsApi = {
   preferences: () => api.get<NotificationPreferences>("/notifications/preferences/").then((r) => r.data),
   updatePreferences: (input: Partial<NotificationPreferences>) =>
     api.patch<NotificationPreferences>("/notifications/preferences/", input).then((r) => r.data),
-  test: () => api.post<{ delivered: number }>("/notifications/test/").then((r) => r.data),
+  /** With `endpoint`, only this device is tried and `this_device` says whether it got it. */
+  test: (endpoint?: string) =>
+    api.post<{ delivered: number; this_device: boolean }>("/notifications/test/", endpoint ? { endpoint } : {}).then((r) => r.data),
 };

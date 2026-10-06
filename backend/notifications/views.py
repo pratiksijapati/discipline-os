@@ -60,15 +60,25 @@ class PreferenceView(generics.RetrieveUpdateAPIView):
 
 
 class TestNotificationView(APIView):
-    """POST /api/notifications/test/ — sends a test push to all of your devices."""
+    """
+    POST /api/notifications/test/ — sends a test push.
+    With {"endpoint": ...} only to that device, so the answer is about *this* device:
+    {"delivered": n, "this_device": true|false}. Without it, to all your devices.
+    """
 
     throttle_scope = "auth"
 
     def post(self, request):
+        endpoint = request.data.get("endpoint") or None
         delivered = send_to_user(
-            request.user, "Reminders are on ✓", "This is how Discipline OS will nudge you.", "/today", tag="test"
+            request.user,
+            "Reminders are on ✓",
+            "This is how Discipline OS will nudge you.",
+            "/today",
+            tag="test",
+            endpoint=endpoint,
         )
-        return Response({"delivered": delivered})
+        return Response({"delivered": delivered, "this_device": bool(endpoint) and delivered > 0})
 
 
 class RunRemindersView(APIView):

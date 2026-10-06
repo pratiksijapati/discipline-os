@@ -120,6 +120,21 @@ class SendingTests(AuthedAPITestCase):
         self.assertFalse(PushSubscription.objects.exists())
 
     @patch("notifications.push.webpush")
+    def test_test_notification_reports_on_this_device(self, webpush):
+        self.subscribe("https://push.example.com/phone")
+        self.subscribe("https://push.example.com/laptop")
+        # Only this device is tried, and the answer is about this device.
+        res = self.client.post(reverse("push-test"), {"endpoint": "https://push.example.com/phone"}, format="json")
+        self.assertEqual(res.data, {"delivered": 1, "this_device": True})
+        self.assertEqual(webpush.call_count, 1)
+        # A device that never turned reminders on gets an honest "no".
+        res = self.client.post(reverse("push-test"), {"endpoint": "https://push.example.com/unknown"}, format="json")
+        self.assertEqual(res.data, {"delivered": 0, "this_device": False})
+        # Without an endpoint: every device, as before.
+        res = self.client.post(reverse("push-test"))
+        self.assertEqual((res.data["delivered"], res.data["this_device"]), (2, False))
+
+    @patch("notifications.push.webpush")
     def test_item_moved_later_today_gets_a_fresh_reminder(self, webpush):
         self.subscribe()
         item = ScheduleItem.objects.create(

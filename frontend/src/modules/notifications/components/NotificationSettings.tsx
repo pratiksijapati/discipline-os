@@ -7,8 +7,10 @@ import { useCurrentUser } from "../../../auth/useAuth";
 import { useToast } from "../../../components/toast/useToast";
 import { Button } from "../../../components/ui/Button";
 import { Switch } from "../../../components/ui/Switch";
+import { cn } from "../../../utils/cn";
 import { formatTime, toInputTime } from "../../../utils/time";
 import { notificationsApi } from "../api";
+import { describeDevice } from "../device";
 import { currentSubscription, pushAvailability, subscribe, type PushAvailability } from "../push";
 import type { NotificationPreferences } from "../types";
 import styles from "./Notifications.module.css";
@@ -18,6 +20,16 @@ const LIMITATION: Record<Exclude<PushAvailability, "ready">, string> = {
   "ios-install-first": "On iPhone, reminders only work from the installed app: More → Install the app, then open it from your home screen and come back here.",
   "no-service-worker": "Reminders work in the installed app (or the deployed site), not the development server. Locally, run: npm run pwa:alt",
   blocked: "Notifications are blocked for this site. Allow them in your browser's site settings, then reload.",
+};
+
+type Status = "enabled" | "blocked" | "off" | "unavailable";
+type TestResult = { ok: boolean; text: string } | null;
+
+const STATUS_LABEL: Record<Status, string> = {
+  enabled: "Enabled ✓",
+  blocked: "Blocked ✕",
+  off: "Not set up",
+  unavailable: "Not available here",
 };
 
 type TimeKey = "tasks_time" | "habits_time" | "night_review_time" | "goal_deadlines_time";
@@ -30,22 +42,28 @@ export function NotificationSettings() {
   const [availability, setAvailability] = useState<PushAvailability | null>(null);
   const [subscribed, setSubscribed] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [testResult, setTestResult] = useState<TestResult>(null);
 
   const config = useQuery({ queryKey: queryKeys.pushConfig, queryFn: notificationsApi.config });
   const prefs = useQuery({ queryKey: queryKeys.notificationPreferences, queryFn: notificationsApi.preferences });
 
+  // Check now, and again whenever you come back (e.g. after changing browser settings).
   useEffect(() => {
     let cancelled = false;
-    void (async () => {
+    const check = async () => {
       const state = await pushAvailability();
       const sub = state === "ready" ? await currentSubscription() : null;
       if (!cancelled) {
         setAvailability(state);
         setSubscribed(Boolean(sub));
       }
-    })();
+    };
+    const onVisible = () => document.visibilityState === "visible" && void check();
+    void check();
+    document.addEventListener("visibilitychange", onVisible);
     return () => {
       cancelled = true;
+      document.removeEventListener("visibilitychange", onVisible);
     };
   }, []);
 
@@ -98,12 +116,27 @@ export function NotificationSettings() {
     }
   }
 
+  /** Never claims success unless this very device was reached. */
   async function sendTest() {
+    setTestResult(null);
+    if ("Notification" in window && Notification.permission === "denied") {
+      setAvailability("blocked");
+      return setTestResult({ ok: false, text: "Notifications are blocked. Open your browser settings to allow them for this site." });
+    }
+    const sub = subscribed ? await currentSubscription() : null;
+    if (!sub) return setTestResult({ ok: false, text: "Turn reminders on for this device first, then send a test." });
+    setBusy(true);
     try {
-      const { delivered } = await notificationsApi.test();
-      toast(delivered ? `Test sent to ${delivered} device${delivered === 1 ? "" : "s"} ✓` : "No device received it — turn reminders on first.", delivered ? "success" : "error");
+      const { this_device } = await notificationsApi.test(sub.endpoint);
+      setTestResult(
+        this_device
+          ? { ok: true, text: "Test notification sent ✓ It should appear in a few seconds." }
+          : { ok: false, text: "This device didn't receive it. Turn reminders off and on again, then retry." },
+      );
     } catch (error) {
-      toast(toApiError(error).message, "error");
+      setTestResult({ ok: false, text: toApiError(error).message });
+    } finally {
+      setBusy(false);
     }
   }
 
@@ -113,6 +146,9 @@ export function NotificationSettings() {
   }
 
   const p = prefs.data;
+  const status: Status =
+    availability === "blocked" ? "blocked" : availability === "ready" ? (subscribed ? "enabled" : "off") : "unavailable";
+  const otherDevices = Math.max(0, (config.data?.devices ?? 0) - (subscribed ? 1 : 0));
   const toggle = (key: ToggleKey, label: string, detail: string, timeKey?: TimeKey) =>
     p && (
       <li className={styles.row} key={key}>
@@ -136,30 +172,56 @@ export function NotificationSettings() {
 
   return (
     <div className={styles.wrap}>
-      {availability !== "ready" ? (
-        <p className={styles.limitation}>{LIMITATION[availability]}</p>
-      ) : (
-        <div className={styles.device}>
-          <span className={styles.deviceText}>
-            {subscribed ? <BellRing size={18} aria-hidden /> : <BellOff size={18} aria-hidden />}
-            {subscribed ? "On for this device" : "Off for this device"}
-          </span>
-          {subscribed ? (
-            <div className={styles.deviceActions}>
-              <Button variant="secondary" icon={<Send size={16} aria-hidden />} onClick={() => void sendTest()}>
-                Send test
-              </Button>
-              <Button variant="ghost" onClick={() => void turnOff()} loading={busy}>
-                Turn off
-              </Button>
+      <section className={styles.status} aria-label="Reminder status">
+        <dl className={styles.statusList}>
+          <div>
+            <dt>Notifications</dt>
+            <dd className={cn(styles.statusValue, styles[status])}>
+              {STATUS_LABEL[status]}
+            </dd>
+          </div>
+          <div>
+            <dt>This device</dt>
+            <dd>{describeDevice()}</dd>
+          </div>
+          {otherDevices > 0 && (
+            <div>
+              <dt>Other devices</dt>
+              <dd>
+                {otherDevices} more with reminders on
+              </dd>
             </div>
-          ) : (
+          )}
+        </dl>
+
+        {status === "blocked" && <p className={styles.limitation}>{LIMITATION.blocked}</p>}
+        {status === "unavailable" && availability !== "ready" && availability !== "blocked" && (
+          <p className={styles.limitation}>{LIMITATION[availability]}</p>
+        )}
+
+        <div className={styles.deviceActions}>
+          {status === "off" && (
             <Button icon={<BellRing size={18} aria-hidden />} onClick={() => void turnOn()} loading={busy}>
               Turn on reminders
             </Button>
           )}
+          {status !== "unavailable" && (
+            <Button variant="secondary" icon={<Send size={16} aria-hidden />} onClick={() => void sendTest()} loading={busy && status !== "off"}>
+              Send test notification
+            </Button>
+          )}
+          {status === "enabled" && (
+            <Button variant="ghost" icon={<BellOff size={16} aria-hidden />} onClick={() => void turnOff()} disabled={busy}>
+              Turn off
+            </Button>
+          )}
         </div>
-      )}
+        {testResult && (
+          <p role="status" className={cn(styles.result, testResult.ok ? styles.resultOk : styles.resultBad)}>
+            {testResult.text}
+          </p>
+        )}
+      </section>
 
       {p && (
         <>
