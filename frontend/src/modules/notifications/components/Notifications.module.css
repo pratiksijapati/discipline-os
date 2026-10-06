@@ -127,7 +127,7 @@
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
   background: var(--surface);
-  font-size: var(--text-sm);
+  font-size: var(--text-md); /* 16px: smaller makes iPhones zoom in */
 }
 
 .time:disabled {

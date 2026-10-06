@@ -92,6 +92,8 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  max-width: 100%;
+  overflow: hidden;
   font-size: var(--text-sm);
   color: var(--text-muted);
   white-space: nowrap;
@@ -129,4 +131,15 @@
 .in_progress .card {
   border-color: var(--accent);
   box-shadow: 0 0 0 1px var(--accent);
+}
+
+/* Phones: the card already shows the time range, so drop the repeated start-time column. */
+@media (max-width: 399px) {
+  .row {
+    grid-template-columns: 18px 1fr;
+  }
+
+  .time {
+    display: none;
+  }
 }

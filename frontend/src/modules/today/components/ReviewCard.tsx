@@ -2,7 +2,7 @@ import { Moon } from "lucide-react";
 import { Link } from "react-router";
 import { ratingEmoji } from "../../reflection/constants";
 import type { TodayDashboard } from "../types";
-import styles from "./WorkoutCard.module.css";
+import styles from "./NudgeCard.module.css";
 
 const EVENING_HOUR = 18;
 

@@ -2,7 +2,7 @@ import { Sun } from "lucide-react";
 import { Link } from "react-router";
 import { useCurrentUser } from "../../../auth/useAuth";
 import type { TodayDashboard } from "../types";
-import styles from "./WorkoutCard.module.css";
+import styles from "./NudgeCard.module.css";
 
 const MORNING_UNTIL_HOUR = 12;
 

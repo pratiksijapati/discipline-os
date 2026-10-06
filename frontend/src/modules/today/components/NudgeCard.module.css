@@ -1,3 +1,5 @@
+/* Small one-line cards on Today that nudge you toward a time-of-day action. */
+
 .card {
   display: flex;
   align-items: center;
@@ -27,29 +29,9 @@
   color: var(--text-muted);
 }
 
-.label {
-  font-size: var(--text-xs) !important;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--accent-strong) !important;
-}
-
+/* A gentle nudge (wake-up challenge, night review): visible, but calmer than NOW. */
 .active {
-  background: var(--accent-strong);
-  border-color: var(--accent-strong);
-  color: var(--on-accent);
-}
-
-.active > svg,
-.active .text span {
-  color: inherit;
-  opacity: 0.9;
-}
-
-.active a {
-  background: var(--on-accent);
-  color: var(--accent-strong);
+  border-left: 4px solid var(--accent);
 }
 
 .done {
