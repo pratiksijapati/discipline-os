@@ -1,33 +1,39 @@
 # Discipline OS — User Guide
 
-Discipline OS is a personal planner that answers one question all day long:
-**"What should I do now?"** It brings your daily plan, tasks, habits, workouts, goals and a short
-night review into one place, and gives you a daily **discipline score** so you can see your
-progress over weeks and months.
+Discipline OS answers one question all day long: **"What should I do now?"**
+It brings your daily plan, tasks, habits, workouts, goals and a short night review into one place,
+and gives each day a **discipline score** so you can see your progress over weeks and months.
 
-It is designed for your phone first, works on a laptop too, and can be installed like a normal app.
+It is built for your phone first, works on a laptop too, and installs like a normal app.
+
+**Open it:** https://discipline-os-omega.vercel.app
 
 ---
 
 ## Contents
 
 1. [Getting started](#1-getting-started)
-2. [Finding your way around](#2-finding-your-way-around)
-3. [Today](#3-today)
-4. [My Day — your schedule](#4-my-day--your-schedule)
-5. [Tasks](#5-tasks)
-6. [Morning routine](#6-morning-routine)
-7. [Habits](#7-habits)
-8. [Workout](#8-workout)
-9. [Goals](#9-goals)
-10. [Night review (Reflection)](#10-night-review-reflection)
-11. [Discipline score and streaks](#11-discipline-score-and-streaks)
-12. [Progress and weekly review](#12-progress-and-weekly-review)
-13. [Wake-up challenge](#13-wake-up-challenge)
-14. [Reminders](#14-reminders)
-15. [Settings](#15-settings)
-16. [Offline use and privacy](#16-offline-use-and-privacy)
-17. [Questions and fixes](#17-questions-and-fixes)
+2. [What goes where?](#2-what-goes-where)
+3. [Finding your way around](#3-finding-your-way-around)
+4. [Today](#4-today)
+5. [Today's Focus](#5-todays-focus)
+6. [Quick Add](#6-quick-add)
+7. [My Day — your schedule](#7-my-day--your-schedule)
+8. [Moving things that didn't happen](#8-moving-things-that-didnt-happen)
+9. [Tasks](#9-tasks)
+10. [Morning routine](#10-morning-routine)
+11. [Habits](#11-habits)
+12. [Workout](#12-workout)
+13. [Goals](#13-goals)
+14. [Wake-up challenge](#14-wake-up-challenge)
+15. [Night review and preparing tomorrow](#15-night-review-and-preparing-tomorrow)
+16. [Minimum Day](#16-minimum-day)
+17. [Discipline score and streaks](#17-discipline-score-and-streaks)
+18. [Progress and weekly insight](#18-progress-and-weekly-insight)
+19. [Reminders](#19-reminders)
+20. [Settings](#20-settings)
+21. [Offline use and privacy](#21-offline-use-and-privacy)
+22. [Questions and fixes](#22-questions-and-fixes)
 
 ---
 
@@ -35,54 +41,38 @@ It is designed for your phone first, works on a laptop too, and can be installed
 
 ### Create your account
 
-1. Open **https://discipline-os-omega.vercel.app**. The very first visit after a quiet
-   period can take up to a minute while the server wakes up.
-2. Tap **Create account**, then enter your first name, email and a password (at least 8 characters).
-3. Your time zone is taken from your device automatically. It decides when your day starts and
-   ends — you can check or change it later in **Settings → Profile**.
+Open the app → **Create an account** → first name, email, password (at least 8 characters).
+Your time zone is taken from your device; you can change it later in **Settings → Profile**.
 
-You stay signed in for 30 days, even if you close the app.
+### The setup wizard (once)
+
+New accounts get a short setup. Each step saves when you tap **Next**, so you can stop at any time:
+
+| Step | What you choose |
+|---|---|
+| Wake-up | Wake-up time, how many minutes still count as "on time", a wake-up challenge (or none) and its length |
+| Morning routine | Tick starter steps or add your own |
+| Workouts | How many per week, which days, the starter **Full Body** plan — or set up later |
+| Habits | **3 to 5** habits (it stops at 5 on purpose) |
+| Growth | An area to improve and, if you like, one goal |
+| Reminders | Turn on notifications and send a test |
+
+It ends with a summary — wake-up time, workout target, habits, discipline target — and **Start today**.
+You can also tap **Skip setup** on the first screen. Either way, it never shows again.
 
 ### Install it on your phone
 
 | Phone | How |
 |---|---|
-| **Android (Chrome)** | Open the app → **More → Install app**, or Chrome menu ⋮ → **Install app** |
-| **iPhone (Safari)** | Open the app → **Share** button → **Add to Home Screen** |
-| **Laptop (Chrome / Edge)** | Click the install icon in the address bar |
+| **Android (Chrome)** | Menu ⋮ → **Install app** (or **More → Install app**) |
+| **iPhone (Safari)** | **Share** → **Add to Home Screen** |
+| **Laptop (Chrome / Edge)** | The install icon in the address bar |
 
-After installing, it opens full-screen from your home screen, like any other app.
-When a new version is available you'll see **"Update available"** — tap it to reload.
-
-### First 10 minutes — recommended setup
-
-1. **My Day → Repeating**: add the things you do most days (wake up, workout, study, dinner, review)
-   with their times and how often they repeat. Every matching day fills itself from now on.
-2. **Morning routine**: list the small steps of your morning (drink water, make bed…).
-3. **Habits**: tap a few starter habits or create your own.
-4. **Goals**: add one or two goals and **Pin to Today** the most important one.
-5. **Settings**: set your wake-up time, weekly workout target, and turn on reminders.
-
-You don't need everything. **Parts you don't set up are simply left out of your score** —
-they never count against you.
+When a new version is out you'll see **Update available** — tap it to reload.
 
 ---
 
-## 2. Finding your way around
-
-On a phone, the bar at the bottom has:
-
-| Tab | What it's for |
-|---|---|
-| **Today** | Your dashboard: what's happening now, what's next, your score |
-| **My Day** | Your timeline for today, tomorrow and the week, and the routine that fills it |
-| **Workout** | Start and log workouts, plans, exercise history |
-| **Habits** | Log today's habits and manage them |
-| **More** | Tasks, Morning routine, Goals, Progress, Reflection, Settings, Install app |
-
-On a laptop, all of these are listed in the sidebar on the left.
-
-### What goes where?
+## 2. What goes where?
 
 | Add a… | When it's… | Example |
 |---|---|---|
@@ -92,316 +82,303 @@ On a laptop, all of these are listed in the sidebar on the left.
 | **Morning routine** step | a small action to start the day | Drink water |
 | **Habit** | something you repeat and track | Read 20 minutes |
 | **Goal** | a bigger result over weeks or months | Read 10 books |
+| **Today's Focus** | the ONE important thing for today | Ship the dashboard API |
 
 Not sure? Tap **+** on Today — Quick Add explains each one before you choose.
 
 ---
 
-## 3. Today
+## 3. Finding your way around
 
-Today is the home screen. From top to bottom:
-
-- **Score card** — today's discipline score so far, your streaks, and how much of the day is done.
-  Tap it to see what makes up the score.
-- **Wake-up challenge** card — in the morning, until you've done the challenge (if it's turned on).
-- **Night review** card — in the evening, reminding you to close the day.
-- **Now / Next** — the item happening right now and the one coming next, with buttons to start,
-  finish or skip.
-- **Today's plan** — your timeline. Tap the circle to mark an item done, tap the item for details.
-- **Main goal** — your most important goal with a quick way to log progress.
-- **Workout** — start today's planned workout, resume one in progress, or see the finished one.
-- **Morning routine** checklist.
-- **Habits** due today.
-- The **+** button opens **Quick Add**: choose Schedule, Task, Habit or Goal.
-
----
-
-## 4. My Day — your schedule
-
-My Day has four views: **Today**, **Tomorrow**, **Week** and **Repeating**.
-
-### Items and their status
-
-Every item has a time, a category (Morning, Workout, Work, Study, Personal, Meal, Rest, Growth,
-Night) and a priority (Low, Medium, High, Critical). Its status is one of:
-
-| Status | Meaning |
+| Bottom bar | What it's for |
 |---|---|
-| **Upcoming** | Not started yet |
-| **In progress** | You tapped **Start** |
-| **Done** | Finished |
-| **Skipped** | You decided not to do it today |
-| **Missed** | Its time passed and it wasn't marked — shown automatically, you can still mark it done |
+| **Today** | What to do now, what's next, how today is going |
+| **My Day** | Your timeline for today, tomorrow and the week, and your repeating plan |
+| **Workout** | Start and log workouts, plans, history |
+| **Habits** | Log and manage habits |
+| **More** | Tasks, Morning routine, Goals, Progress, Reflection, Settings, Install app |
 
-Tap an item to start it, mark it done, skip it, change it, or **Remove from this day**.
-
-### Repeating items (Repeating view)
-
-In **Repeating**, add things that repeat:
-
-- **Every day**, **Weekdays (Mon–Fri)**, **Weekends (Sat–Sun)**, **Selected days**, or
-  **Weekly (same weekday)**
-- **Starting from** a date, and optionally ending on a date
-- An optional **Reminder** (at start time or some minutes before)
-
-Each repeating item appears automatically on every matching day.
-Changing or removing it on **one day** only affects that day; editing it in **Repeating** changes
-all future days.
-
-For something that happens once, choose **Doesn't repeat**.
-
-**Prepare tomorrow** (in the Tomorrow view) lets you look over and adjust tomorrow's plan the
-night before.
+On a laptop the same pages are in the left sidebar.
 
 ---
 
-## 5. Tasks
+## 4. Today
 
-Tasks are to-dos that aren't tied to a time of day.
+The page you'll use most. From top to bottom:
 
-- Add with the **+** button: name, **Due date** (optional), **Priority**, **Notes**.
-- Lists: **Today** (due today, plus **Overdue**), **Upcoming**, **Someday** (no date) and
-  **Completed**.
-- Tap the circle to complete; tap the task to edit or delete.
+1. **Greeting and date**, with a small line: `🔥 8-day streak · Score 64 / 100 ›` — tap it for the breakdown.
+2. **Wake-up challenge** (mornings, until it's done) and **Night review** (evenings) — small reminder cards.
+3. **NOW** — the one thing to do right now:
+   - something scheduled now → **Start** / **Done** (a workout item says **Start workout** and opens it);
+   - already started → **Mark done**;
+   - a workout in progress → **Resume workout**;
+   - nothing scheduled → **"You're free until 2:00 PM"**, suggesting your focus or most important task;
+   - can't do it now? → **Can't do it now? Move it**.
+4. **NEXT** — the next item and how soon, or the next task due today.
+5. **Today's Focus** — see below.
+6. **Today's plan** — one line per item: tick · time · title. Tap the line for all its actions.
+7. **One-line summaries**, each with one button: Morning routine (**Tick off**), Habits (**Log**),
+   Tasks (**View**), Workout (**Start**/**Resume**), main goal (e.g. **+1 h**).
+8. At the very bottom: **Hard day? Switch to a minimum day** (see [Minimum Day](#16-minimum-day)).
 
+The **+** button opens [Quick Add](#6-quick-add).
+
+---
+
+## 5. Today's Focus
+
+*"If I finish only ONE important thing today, what is it?"*
+
+- Tap **Set the one thing that matters most today**, type it, press Enter.
+- **Mark complete** when it's done (**Undo** if you tapped by mistake). **Edit** lets you change or clear it.
+- When you're free, NOW suggests your focus first.
+- It counts toward your score as one more **important task**, and the night review shows whether you finished it.
+- One focus per day; tomorrow starts empty.
+
+---
+
+## 6. Quick Add
+
+Tap **+** on Today: **Schedule · Task · Habit · Goal**, each with a one-line explanation and an example.
+Pick one and its form opens; **← Choose something else** goes back. New schedule items and tasks default to today.
+
+(The **+** on other pages adds that page's own kind of thing directly.)
+
+---
+
+## 7. My Day — your schedule
+
+Four views: **Today**, **Tomorrow**, **Week** and **Repeating**.
+
+Every item has a time, a category (Morning, Workout, Work, Study, Personal, Meal, Rest, Growth, Night)
+and a priority. Its status is **Upcoming**, **In progress**, **Done**, **Skipped**, or **Missed** (its time passed
+without being marked — you can still mark it done or move it).
+
+**Tap an item** for its actions: **Done · Start · Move · Skip** (a missed item: **Done · Move · Skip**),
+and **Edit details** for the full form, including **Remove from this day**.
+
+**Repeating:** add things that come back — every day, weekdays, weekends, selected days or weekly — from a start
+date, with an optional reminder. They appear on every matching day automatically. Changing one day changes only
+that day; editing the item in **Repeating** changes all future days.
+
+---
+
+## 8. Moving things that didn't happen
+
+Tap an item → **Move** (or **Can't do it now? Move it** on NOW):
+
+- **Later today** — suggests the next quarter-hour; you can change it (it must be later than now).
+- **Tomorrow** — same time tomorrow.
+- **Choose date & time** — any day and time.
+
+The item keeps its length and becomes upcoming again. **Only that day's item moves — your repeating plan stays the
+same.** If the target day already has the same repeating item, you're told so before moving ("…moving adds a
+second one — if one is enough, skip today instead"). Reminders follow the new time.
+
+---
+
+## 9. Tasks
+
+Things to get done, with no fixed time. Add with **+** (title, optional due date, priority, notes).
+Lists: **Today** (due today and **Overdue**), **Upcoming**, **Someday**, **Completed**.
 **High** and **Critical** tasks count as *important* in your score.
 
 ---
 
-## 6. Morning routine
+## 10. Morning routine
 
-A checklist of small morning steps (e.g. *Drink water*, *Make bed*, *Wake-up challenge*).
-
-- Edit it under **More → Morning routine**: add, reorder, turn steps on or off.
-- Tick steps from the checklist on **Today**. It resets every day.
+A short checklist to start every day (**More → Morning routine**): add, rename, reorder with the arrows,
+switch steps on or off. Tick steps from Today (**Tick off**). It resets every day.
 
 ---
 
-## 7. Habits
+## 11. Habits
 
-Habits are things you want to repeat regularly.
-
-**Types**
-
-| Type | Example | How you log it |
+| Type | Example | Logging |
 |---|---|---|
-| **Done / not done** | Meditate | One tap |
-| **Count** | 8 glasses of water | + / − buttons until the target |
-| **Duration** | Read 30 minutes | + / − minutes until the target |
+| **Done / not done** | Meditate | one tap |
+| **Count** | 8 glasses of water | + / − until the target |
+| **Duration** | Read 20 minutes | + / − minutes |
 
-**How often**: **Every day**, **Selected days**, or **Times per week** (e.g. 3× a week, any days).
-
-Each habit card shows today's progress, your **streak** (days in a row) and a strip for this week.
-You can reorder habits, edit them, or start quickly from the **starter habit** chips.
+How often: **Every day**, **Selected days**, or **Times per week**. Each habit shows today's progress,
+its **streak** and this week. Tap a starter suggestion to add one instantly.
 
 ---
 
-## 8. Workout
+## 12. Workout
 
-### Plans and exercises
-
-- **Exercises** are measured in **reps** (e.g. push-ups) or **time** (e.g. plank).
-- A **plan** is a list of exercises with targets (sets, reps or seconds, rest time).
-- Not sure where to start? Tap **Add starter exercises** — it adds common exercises and two ready
-  plans (*Push Day*, *Full Body*).
-
-### Doing a workout
-
-1. Tap **Start** on a plan (or on the Today card).
-2. The live screen shows a running timer. For each exercise, log each **set** (reps or time,
-   optional weight).
-3. A **rest timer** counts down between sets and buzzes when it ends.
-4. **Pause** / **Resume** if you're interrupted, then **Finish** — or **Cancel workout** to discard it.
-
-Only one workout can be in progress at a time; if you leave the screen, Today shows **Resume**.
-
-### Stats and history
-
-See this week's workouts against your **weekly target** (set in Settings, default 4), your
-week streak, and a full history. Each exercise also has its own history so you can see if you're
-getting stronger.
+- **Exercises** are measured in reps or time; a **plan** is a list of them with targets and rest.
+  New here? **Add starter exercises** adds common exercises and two plans (*Push Day*, *Full Body*).
+- **Start** a plan → log each **set** → the **rest timer** buzzes → **Finish** (or **Cancel workout**).
+  **Pause / Resume** if interrupted; one workout at a time.
+- See this week against your **weekly target**, your week streak, history, and each exercise's history.
 
 ---
 
-## 9. Goals
+## 13. Goals
 
-Goals live under **More → Goals**.
+**More → Goals.** Pick a category and how you measure it (done/not done, number, money, hours, count,
+percentage), a target and an optional deadline.
 
-- **Category**: Fitness, Study, Career, Money, Reading, Coding, Personal projects, Mindset,
-  Relationships, Other.
-- **How you measure it**: Done / not done, Number, Money (NPR), Time (hours), Count or Percentage —
-  with a target and optional deadline.
-- **Already done**: progress you made before you started using the app.
-- **Log progress** by adding an amount (e.g. +2 hours; use a minus sign to subtract) or with
-  **Set total**. Simple goals just have **Mark as done**. Every entry is kept in the goal's
-  **History** and can be **undone**.
-- Status updates itself: **Not started → In progress → Completed**. You can also **Pause** and
-  **Resume** a goal.
-- **Pin to Today** your most important goal — it's shown on the Today screen.
+- **Log** progress by adding an amount (use a minus sign to subtract) or **Set total**; every entry can be undone.
+- Status updates itself (Not started → In progress → Completed); you can **Pause** and **Resume**.
+- **Pin to Today** your most important goal.
 
 ---
 
-## 10. Night review (Reflection)
+## 14. Wake-up challenge
 
-At the end of the day, take two minutes to close it (**More → Reflection**, or the evening card on Today).
-
-1. Rate the day: 😞 Rough · 😐 Meh · 🙂 Good · 😄 Great · 🔥 On fire
-2. Optionally rate your **energy** and **mood** (1–5).
-3. Write a little: **What went well**, **What to improve**, **Grateful for**.
-4. Tap **Complete Day**.
-
-Your writing saves automatically as you type. Completing the day also ticks any "review" item on
-your Night schedule and saves a snapshot of the day's numbers.
-
-If you open the review **before 4:00 AM**, it's still for the previous day — so a late night
-doesn't lose yesterday's review. Past reviews are listed below the form.
-
----
-
-## 11. Discipline score and streaks
-
-### How the score works
-
-Each day gets a score from **0 to 100**, built from up to seven parts:
-
-| Part | Weight | Counts on days when… | Full points when… |
-|---|---|---|---|
-| Wake up on time | 15 | You have a routine step or plan item with "wake" in its name, or you've used the wake-up challenge | You tick it (or finish the challenge) by wake-up time + grace minutes |
-| Morning routine | 10 | You have a morning routine | Every step is ticked |
-| Workout | 20 | A workout plan is set for that weekday, or a Workout item is in your plan | You finish a workout (or the Workout item) |
-| Important tasks | 25 | Tasks are due — High/Critical ones first; with no tasks, your plan items count instead | All of them are done |
-| Habits | 15 | Habits are due | Every due habit reaches its target |
-| Growth | 10 | You have an open goal or a Study/Growth item planned | You log goal progress or finish a Study/Growth item |
-| Night review | 5 | Every day | You complete the night review |
-
-- Only the parts that **apply to your day** are used, and the result is scaled to 100.
-  If you don't do workouts, workouts are simply left out — they don't pull you down.
-- Partial credit counts: half your habits done gives half the habit points.
-- Waking up late (after your wake-up time + grace minutes) gives half credit, not zero.
-- Today's score updates live. **Past days are frozen** once they end.
-- You can change the weights in **Settings → Discipline score**.
-
-The score card shows a word next to the number (for example *Day in progress* while the day is
-still going), never a judgement.
-
-### Streaks
-
-| Streak | Grows when… |
-|---|---|
-| **Discipline** | Your day's score reaches your streak threshold (default 70) |
-| **Wake-up** | You wake up on time |
-| **Habits** | You complete your due habits |
-| **Workout** | You meet your weekly workout target (counted in weeks) |
-
-Days with nothing to track are skipped — they don't break a streak. Today never breaks a streak
-while it's still in progress.
-
----
-
-## 12. Progress and weekly review
-
-**More → Progress** has two tabs.
-
-**Overview** — pick **7 days, 30 days, 3 months or Year** to see:
-- your average score and a score chart (with your target line),
-- completion rates for each part (wake-up, workouts, habits, tasks…),
-- learning hours,
-- a **Show as table** option for exact numbers.
-
-Averages use finished days only, so a half-done today doesn't drag them down.
-
-**Weekly review** — one week at a time (go back to earlier weeks): what **went well**, what you
-**struggled** with, and **one thing to focus on** next week.
-
----
-
-## 13. Wake-up challenge
-
-A short challenge that proves you're really out of bed. Turn it on in **Settings → Wake-up**.
+A short challenge that proves you're really up (**Settings → Wake-up**):
 
 | Challenge | How it works |
 |---|---|
-| **Dance**, **Jumping jacks**, **Squats** | Uses your front camera. The countdown only runs **while you're moving**. 30 s – 3 min. |
-| **Math** | Solve 3 quick problems. Wrong answers just ask you to try again. |
+| **Dance**, **Jumping jacks**, **Squats** | Front camera; the countdown only runs **while you're moving** |
+| **Math** | Solve 3 quick problems |
 
-- If you have no camera or decline camera access, choose **No camera — use a timer**.
-- Tap **Play beat** for music while you move. The screen stays on during the challenge.
-- **Privacy**: the camera picture is analysed on your phone only. Nothing is recorded or uploaded.
-- Finishing ticks your *Wake-up challenge* routine step and *Wake up* schedule item, and shows
-  your wake-up streak.
-- With reminders on, the wake-up notification opens the challenge directly.
+No camera? Choose **No camera — use a timer**. **Play beat** adds music; the screen stays on.
+The camera picture is analysed **on your phone only** — nothing is recorded or uploaded.
+Finishing ticks your *Wake-up challenge* routine step and *Wake up* plan item.
 
 ---
 
-## 14. Reminders
+## 15. Night review and preparing tomorrow
 
-Turn reminders on in **Settings → Reminders**. Your browser will ask for permission — tap **Allow**.
+**More → Reflection** (or the evening card on Today):
 
-You can choose each kind separately:
-- **Schedule items** — when an item has a reminder set
-- **Workouts** — a chosen number of minutes before a workout
-- **Wake-up** — at your wake-up time (opens the wake-up challenge if it's on)
-- **Tasks left** — only if important tasks are still open, at a time you pick
-- **Habits left** — only if habits are still due
-- **Night review** — only if you haven't closed the day
-- **Goal deadlines** — the day before and the day of
+1. Rate the day (😞 Rough → 🔥 On fire), optionally energy and mood.
+2. Write a line in **What went well**, **What to improve**, **Grateful for** (saves as you type).
+3. **Complete Day.**
 
-Reminders are set **per device**, so turn them on on each phone or laptop you use.
+You then see **Day complete** with your discipline score and the day's results (focus, tasks, habits, workout,
+routine, plan), and **Ready for tomorrow? → Prepare tomorrow**:
 
-Use **Send test** to check it works on your device.
+- Tomorrow's plan, with repeating items already there. Tap an item to change its time or remove it from tomorrow.
+- **Add to tomorrow** and **Add a task for tomorrow**; tasks due tomorrow are listed.
+- **Tomorrow is ready** → "Tomorrow is ready ✓ … Sleep well."
 
-**Good to know**
-- On **iPhone**, reminders work only after you **install the app to the Home Screen** (iOS 16.4+).
-- Reminders arrive when the phone is online. If notifications are blocked, allow them in your
-  browser's site settings and reload.
+A review done just after midnight still counts for the day before, and "Prepare tomorrow" then prepares today.
 
 ---
 
-## 15. Settings
+## 16. Minimum Day
+
+For busy, tired, travelling or bad days — a smaller set of commitments instead of giving up.
+
+1. At the bottom of Today: **Hard day? Switch to a minimum day**.
+2. The first time, build your short list (suggestions like *Drink water*, *10 push-ups*, *Read 5 minutes*, or your own).
+3. Optionally pick a reason → **Start minimum day**.
+
+A green **Minimum day** card appears under Today's Focus, replacing the morning routine for the day.
+**Back to a normal day** turns it off; **Edit list** changes the list.
+
+**The rules — honest, not a cheat:**
+- The list replaces only the **morning routine** in your score (same weight). Everything else still counts.
+- Finish the **whole** list and your **discipline streak holds** (it doesn't grow, but it doesn't break) —
+  at most **2 days a week**.
+- Minimum days are labelled in your score breakdown and weekly review.
+
+---
+
+## 17. Discipline score and streaks
+
+Each day gets a score from **0 to 100** from up to seven parts:
+
+| Part | Weight | Counts on days when… | Full points when… |
+|---|---|---|---|
+| Wake up on time | 15 | You have a "wake" routine step or plan item, or use the challenge | Confirmed by wake-up time + grace minutes |
+| Morning routine | 10 | You have a morning routine (on a Minimum Day: your minimum list) | Every step is ticked |
+| Workout | 20 | A workout is planned for that day | You finish it |
+| Important tasks | 25 | Tasks (or your focus) are due | All done — today's focus counts as one of them |
+| Habits | 15 | Habits are due | Every due habit reaches its target |
+| Growth | 10 | You have an open goal or a Study/Growth item | You log goal progress or finish the item |
+| Night review | 5 | Every day | You complete the night review |
+
+- Only parts that **apply to your day** count, scaled to 100 — what you don't use never lowers your score.
+- Partial credit counts; waking up late still earns half.
+- **Tap the score** for the breakdown: each part's points (✓ when full), what's not counted today, and
+  **"You can still reach 89 today."** — the most you can still earn.
+- Past days are frozen once they end.
+
+| Streak | Grows when… |
+|---|---|
+| **Discipline** | The day's score reaches your threshold (default 70) |
+| **Wake-up** | You wake up on time |
+| **Habits** | You complete your due habits |
+| **Workout** | You meet your weekly target (counted in weeks) |
+
+Days with nothing to track are skipped, today never breaks a streak while it's in progress, and a finished
+Minimum Day holds the discipline streak (up to 2 a week).
+
+---
+
+## 18. Progress and weekly insight
+
+**More → Progress:**
+
+- **Overview** — 7 days, 30 days, 3 months or Year: average score and chart, completion rates, learning hours,
+  and **Show as table**. Averages use finished days only.
+- **Weekly review** — starts with a **This week** card:
+  - **Strongest area** — e.g. *Workout · 4 / 4 workouts*
+  - **Needs attention** — e.g. *Important tasks · 58% completed*
+  - **Suggested focus next week** — one short line, plus how to do it
+
+  Then the week's numbers, score by day, what went well and where you struggled. Look back at earlier weeks too.
+  Everything comes from your own data — no AI.
+
+---
+
+## 19. Reminders
+
+**Settings → Reminders** shows the truth about this device:
+
+```
+Notifications   Enabled ✓   (or Blocked ✕ / Not set up / Not available here)
+This device     Chrome on Android
+```
+
+- **Turn on reminders** → allow notifications. **Send test notification** says "sent ✓" only if *this* device got it.
+- **Blocked** → allow notifications for the site in your browser settings, then come back (it re-checks).
+- Choose each reminder: schedule items, workouts, wake-up, tasks left, habits left, night review, goal deadlines.
+- Reminders are per device — turn them on on each phone or laptop.
+- **iPhone:** reminders only work from the installed app (iOS 16.4+).
+
+---
+
+## 20. Settings
 
 | Section | What you can change |
 |---|---|
-| **Profile** | Name, time zone (email can't be changed) |
-| **Appearance** | Light, Dark or System theme |
-| **Week & workouts** | First day of the week, weekly workout target |
-| **Discipline score** | Wake-up time, grace minutes, part weights, streak threshold, daily target |
-| **Wake-up** | Challenge on/off, type and length |
-| **Reminders** | Which reminders and when |
-| **App** | Install the app, version number |
-| **Password** | Change your password |
-
-**Log out** is at the bottom.
+| Profile | Name, time zone |
+| Appearance | Light, Dark or System |
+| Week & workouts | First day of the week, weekly workout target |
+| Discipline score | Wake-up time, grace minutes, part weights, streak threshold, daily target |
+| Wake-up | Challenge on/off, type, length |
+| Reminders | Status, test, which reminders and when |
+| App | Install, version |
+| Password | Change your password |
 
 ---
 
-## 16. Offline use and privacy
+## 21. Offline use and privacy
 
-- Once installed, the app **opens without internet**. It shows an "offline" banner, and your data
-  appears again when you're back online. It never shows old or made-up numbers while offline.
-- Your data is private to your account. Nobody else — and no other account — can see it.
+- Once installed, the app **opens without internet** and shows an offline banner; it never shows old or made-up numbers.
+- Your data is private to your account.
 - The wake-up camera never leaves your phone.
 
 ---
 
-## 17. Questions and fixes
+## 22. Questions and fixes
 
-**The app is slow to open the first time in a while.**
-The free server sleeps when unused and takes up to a minute to wake. After that it's fast.
+**The app is slow the first time in a while.** The free server sleeps; the first request can take up to a minute.
 
-**My score looks low but I did a lot.**
-Tap the score card to see each part. Check that items are marked **Done** (not left as *Missed*)
-and that your wake-up time in Settings is right.
+**I saw "Something went wrong".** Tap **Reload**. After an update the app reloads itself into the new version.
 
-**Yesterday's score didn't change after I fixed something.**
-Past days are frozen on purpose so your history stays honest.
+**My score looks low.** Tap it: each part shows its points and what's left. Check items are marked **Done**,
+and your wake-up time in Settings.
 
-**I don't get reminders.**
-Check Settings → Reminders says they're on, use **Send test**, allow notifications for the site,
-and on iPhone install the app first.
+**Yesterday's score didn't change after I fixed something.** Past days are frozen on purpose.
 
-**The camera challenge doesn't start.**
-Allow camera access when asked, or use **No camera — use a timer**. The camera needs the secure
-(https) app address.
+**I don't get reminders.** Settings → Reminders: check the status, use **Send test notification**, allow
+notifications, and on iPhone install the app first.
 
-**I see "Update available".**
-Tap it — the app reloads with the newest version.
+**The camera challenge doesn't start.** Allow camera access, or use **No camera — use a timer**.

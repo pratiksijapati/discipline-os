@@ -56,7 +56,7 @@ Every record belongs to one user; the API never returns another user's data.
 | Push | pywebpush + VAPID (Web Push protocol) |
 | Config | django-environ (`.env`), Vite env (`VITE_*`) |
 | Production | gunicorn + whitenoise on Render, Neon Postgres, Vercel for the frontend |
-| Quality | Django test runner (109 tests), `tsc -b`, oxlint |
+| Quality | Django test runner (134 tests), `tsc -b`, oxlint |
 
 ---
 
@@ -247,14 +247,14 @@ decimals serialised as numbers.
 
 | App | Models | Notes |
 |---|---|---|
-| `users` | `User` (email login), `UserSettings` (one-to-one) | Settings: theme, week start, workout target, wake time + grace, score weights, streak threshold, daily target, wake challenge options |
-| `planner` | `ScheduleTemplate`, `ScheduleItem`, `Routine`, `RoutineItem`, `RoutineLog` | Recurring plan materialised lazily per day; one default routine per user |
-| `tasks` | `Task` | Today / upcoming / someday / completed views |
+| `users` | `User` (email login), `UserSettings` (one-to-one) | Settings: theme, week start, workout target, wake time + grace, score weights, streak threshold, daily target, wake challenge options, `onboarding_completed` |
+| `planner` | `ScheduleTemplate`, `ScheduleItem`, `Routine` (`kind`: morning / minimum), `RoutineItem`, `RoutineLog`, `MinimumDay` | Recurring plan materialised lazily per day; one default morning routine and at most one Minimum Day checklist per user |
+| `tasks` | `Task`, `DailyFocus` | Today / upcoming / someday / completed views; one focus per user per day |
 | `habits` | `Habit`, `HabitLog` | boolean / quantity / duration; daily / selected days / times-per-week |
 | `workouts` | `Exercise`, `WorkoutPlan`, `PlanExercise`, `WorkoutSession`, `SessionExercise`, `WorkoutSet` | One active session per user; plan is snapshotted at start |
 | `goals` | `Goal`, `GoalProgress` | Progress is an append-only log with undo; status derived |
 | `reflections` | `DailyReflection` | Autosaved draft; stats snapshot frozen on completion |
-| `discipline` | `DailyScore` | Score per user per day; past days final |
+| `discipline` | `DailyScore` | Score per user per day (breakdown JSON incl. `max_ratio`, `minimum_day`); past days final |
 | `notifications` | `PushSubscription`, `NotificationPreference`, `SentReminder` | Idempotent reminder delivery |
 | `challenges` | `WakeChallengeSession` | Server-checked wake-up challenge |
 
@@ -295,6 +295,9 @@ All paths are under `/api/`. All except auth, health and the cron hook require
 | CRUD | `schedule/` | Day items for a range (`?start=&end=`, default today); PATCH status |
 | CRUD | `routines/`, `routine-items/` | Morning routine; `routines/today/`, `routines/{id}/reorder/`, `routine-items/{id}/check/` |
 | CRUD | `tasks/` | Tasks with `?view=today|upcoming|someday|completed` |
+| GET/POST/PATCH/DELETE | `daily-focus/` | Today's Focus: `daily-focus/today/`, one per day, `completed` stamps `completed_at` |
+| GET/POST/DELETE | `minimum-day/` | Today's Minimum Day state; POST `{reason?}` starts it (needs a list), DELETE ends it |
+| PUT | `minimum-day/checklist/` | `{items: [...]}` — set the Minimum Day list (trimmed, de-duplicated, ticks kept) |
 
 **Habits, workouts, goals, review**
 
@@ -314,14 +317,14 @@ All paths are under `/api/`. All except auth, health and the cron hook require
 
 | Method | Path | Purpose |
 |---|---|---|
-| GET | `discipline/today/` | Live score + breakdown + streaks |
+| GET | `discipline/today/` | Live score + breakdown + `max_possible` + streaks |
 | GET | `discipline/scores/?start=&end=` | Daily scores in a range |
 | GET | `progress/?range=7d|30d|90d|365d` | Analytics overview |
-| GET | `progress/weekly/?offset=0` | Weekly review (0 = this week) |
+| GET | `progress/weekly/?offset=0` | Weekly review (0 = this week), incl. `insight` and `minimum_days` |
 | GET | `notifications/config/` | VAPID public key / push availability |
 | POST/DELETE | `notifications/subscriptions/` | Register / remove this device's push subscription |
 | GET/PATCH | `notifications/preferences/` | Which reminders, when |
-| POST | `notifications/test/` | Send a test notification to your devices |
+| POST | `notifications/test/` | Test notification; with `{endpoint}` only this device → `{delivered, this_device}` |
 | POST | `notifications/run/` | Cron hook (`X-Cron-Secret`), 404 when not configured |
 | GET | `wake/today/` | Challenge config, today's completion, wake-up streak |
 | POST | `wake/sessions/` | Start (`method`: camera/manual/math, optional `challenge_type`) — math problems generated server-side |
@@ -348,6 +351,15 @@ All paths are under `/api/`. All except auth, health and the cron hook require
 Each folder in `src/modules/` holds `api.ts` (typed calls), `hooks.ts` (queries/mutations),
 `types.ts` and `components/`. Pages in `src/pages/` compose modules and are **lazy-loaded**
 (`pages/lazyPages.ts`) so the first load stays small.
+
+Modules added in the usability round: `focus` (Today's Focus), `minimum` (Minimum Day),
+`quickadd` (the + chooser and the shared definitions in `kinds.ts`), `onboarding` (setup wizard steps).
+`today` holds the Today building blocks: `NowNext`, `DayTimeline`, `TodaySummaryList`, the nudge cards.
+
+**Stale builds.** After a deploy, an open page may ask for code files that no longer exist.
+`services/staleBuild.ts` detects that (lazy pages and `vite:preloadError`) and reloads once into the
+new build (at most once per 30 s); any other crash shows `RouteErrorPage` instead of a developer
+error. `vercel.json` only rewrites extension-less paths to `index.html`, so a missing file is a 404.
 
 ### Routing
 
@@ -427,15 +439,43 @@ since start ≥ target and reported active seconds ≥ target (3 s tolerance); m
 server-side and only the questions are sent. The challenge only counts toward the score once a
 user has completed it at least once, so new accounts aren't scored on a feature they never used.
 
+**"You can still reach X today."** Each score part stores `max_ratio` — what it can still reach today
+(1.0, except wake-up after the deadline: 0.5). `max_possible` uses the same formula as the score, so the
+two always agree; a final day's maximum is its score.
+
+**Today's Focus counts inside "Important tasks"**, as one more important item, so score weights never change.
+
+**Moving keeps the routine intact.** A move PATCHes one occurrence's `date`/times (`occurrence_date` stays,
+so the template can't regenerate it; `is_customized` protects it from template edits). The reminder key
+includes the start time, so a moved item is reminded again. The Move panel warns when the target day already
+has the same template's own item.
+
+**Minimum Day is honest.** Its checklist (a `Routine` of kind `minimum`) stands in for the morning routine
+at the same weight; every other part still counts. A Minimum Day with its whole list done *holds* the
+discipline streak (state `None`, like an untracked day) — at most 2 per week. Morning-routine lookups and
+`/api/routines/` only ever see kind `morning`.
+
+**Onboarding never catches existing users.** Migration `users/0006` marks every existing account as set up
+(creating missing settings rows); the frontend redirects to `/welcome` only on an explicit `false`, so an
+older server that doesn't send the flag during a deploy can't trigger it.
+
+**Weekly insight is deterministic.** Finished days only; an area needs 2+ tracked days; workouts are judged
+against the weekly target only once the week is over (or the target is met); one area is never both
+strongest and weakest.
+
+**Reminder status never pretends.** A test is sent to *this* device's endpoint and reports `this_device`;
+a blocked permission is reported without calling the server.
+
 **Non-shaming language** throughout: "Day in progress", "Not tracked today", half credit for late
-wake-ups, encouraging empty states.
+wake-ups, "Can't do it now? Move it", encouraging empty states.
 
 ---
 
 ## 11. Testing and quality checks
 
 ```powershell
-# Backend — 109 tests (models, permissions/ownership, scoring, streaks, analytics, reminders, wake challenge)
+# Backend — 134 tests (models, ownership, scoring, max possible, streaks incl. Minimum Day, analytics and
+# weekly insight, reminders, focus, moving items, onboarding, wake challenge)
 cd backend
 .venv\Scripts\python.exe manage.py test --noinput
 
@@ -568,6 +608,25 @@ by a frontend commit (screens), and verified before moving on.
 | 12. Deployment | Production settings, Render blueprint, Vercel config, deploy guide |
 
 `git log` shows one or two commits per phase in this order.
+
+**Usability round (after going live).** With the app in daily use, a second round made it simpler to use
+every day — one improvement at a time, each tested in the browser at 320–430 px and confirmed before the next:
+
+| # | Improvement | Migration |
+|---|---|---|
+| 1 | Simpler Today: NOW first, NEXT, compact plan, one-line summaries | — |
+| 2 | Score breakdown with "You can still reach X today" | — |
+| 3 | Move / Reschedule (later today, tomorrow, any date) | — |
+| 4 | Night review → Prepare tomorrow → "Tomorrow is ready" | — |
+| 5 | Today's Focus | `tasks/0002` (new table) |
+| 6 | Quick Add and clearer terms ("Repeating") | — |
+| 7 | First-time setup wizard | `users/0006` (flag + existing users marked done) |
+| 8 | Honest reminder status and per-device test | — |
+| 9 | Minimum Day | `planner/0003` (`Routine.kind`, new table) |
+| 10 | Weekly insight ("This week" card) | — |
+| 11 | Mobile polish from a full audit of every page and sheet | — |
+
+Every migration only adds; nothing was renamed or removed, and existing data was preserved.
 
 **Going live (Phase 12)** happened in this order:
 1. production settings (gunicorn, whitenoise, HTTPS/HSTS, Neon pooler support), `render.yaml`

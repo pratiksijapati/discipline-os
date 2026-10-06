@@ -10,18 +10,18 @@ into a daily **discipline score** with streaks and progress charts.
 
 ## Features
 
-- **Today** — what's happening now and next, your plan, habits, tasks and live score in one screen
-- **My Day** — repeating routine that fills every day automatically; today / tomorrow / week views
-- **Tasks** — due dates, priorities, overdue and someday lists
-- **Morning routine** — a daily checklist
-- **Habits** — done/not-done, count or duration; daily, selected days or times per week; streaks
-- **Workout** — plans, live sessions with sets and rest timer, stats and exercise history
-- **Goals** — measurable goals with a progress log, undo and a main goal pinned to Today
-- **Night review** — rate the day, reflect, and close it with a frozen summary
-- **Discipline score** — 0–100 from only the parts you actually use, plus streaks
-- **Progress** — score charts, completion rates, learning hours and a weekly review
-- **Reminders** — Web Push notifications you control per type
-- **Wake-up challenge** — move in front of the camera (processed on-device) or solve math to prove you're up
+- **Today** — NOW (what to do right now), NEXT, a compact plan and one-line summaries
+- **Today's Focus** — the one important thing for the day
+- **Quick Add** — one + for schedule, task, habit or goal, with plain explanations
+- **My Day** — today / tomorrow / week, a repeating plan that fills every day, and **Move** for missed items
+- **Tasks, Morning routine, Habits, Workout, Goals** — logging made quick, with streaks and history
+- **Night review → Prepare tomorrow** — close the day, then get tomorrow ready
+- **Discipline score** — 0–100 from only the parts you use, with "you can still reach X today"
+- **Minimum Day** — a smaller, honest set of commitments for hard days that keeps your streak
+- **Progress** — charts, completion rates and a weekly "This week" insight
+- **Wake-up challenge** — move in front of the camera (processed on-device) or solve math
+- **Reminders** — Web Push with an honest per-device status
+- **First-time setup** — a short wizard builds your system in a few minutes
 - **PWA** — install to your home screen, opens offline, light and dark themes
 
 ## Tech stack
