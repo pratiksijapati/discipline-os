@@ -217,3 +217,20 @@ class RoutineCheckSerializer(serializers.Serializer):
 
 class ItemOrderSerializer(serializers.Serializer):
     item_ids = serializers.ListField(child=serializers.IntegerField(), allow_empty=False, max_length=200)
+
+
+class MinimumDayStartSerializer(serializers.Serializer):
+    reason = serializers.CharField(max_length=120, required=False, allow_blank=True)
+
+
+class MinimumChecklistSerializer(serializers.Serializer):
+    items = serializers.ListField(child=serializers.CharField(max_length=120, allow_blank=True), max_length=10)
+
+    def validate_items(self, value):
+        cleaned, seen = [], set()
+        for title in (t.strip() for t in value):
+            if title and title.lower() not in seen:
+                seen.add(title.lower())
+                cleaned.append(title)
+        return cleaned
+

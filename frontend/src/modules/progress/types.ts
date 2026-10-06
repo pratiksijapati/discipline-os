@@ -42,6 +42,8 @@ export interface WeeklyReview {
   week_end: string;
   is_current: boolean;
   days_scored: number;
+  /** Days switched to a Minimum Day this week (missing on older servers). */
+  minimum_days?: number;
   score: {
     average: number | null;
     rating: ScoreRating | null;

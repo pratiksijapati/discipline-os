@@ -1,5 +1,6 @@
 import type { DayScore, Streaks } from "../discipline/types";
 import type { DailyFocus } from "../focus/types";
+import type { MinimumDayState } from "../minimum/types";
 import type { Goal } from "../goals/types";
 import type { HabitCard } from "../habits/types";
 import type { RoutineToday } from "../routine/types";
@@ -40,6 +41,8 @@ export interface TodayDashboard {
   workout: WorkoutToday;
   main_goal: Goal | null;
   focus: DailyFocus | null;
+  /** Missing while an older server is still deploying. */
+  minimum_day?: MinimumDayState;
   reflection: { completed: boolean; day_rating: number | null };
   summary: TodaySummary;
 }

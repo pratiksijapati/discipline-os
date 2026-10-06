@@ -18,6 +18,8 @@ const MORNING_UNTIL_HOUR = 12;
 export function TodaySummaryList({ data }: { data: TodayDashboard }) {
   const hour = Number(data.now.slice(11, 13));
   const routine = data.routine;
+  // On a Minimum Day its short checklist (shown above) replaces the morning routine.
+  const showRoutine = !data.minimum_day?.active;
   const routineOpen = routine.routine !== null && routine.completed < routine.total;
   // While the morning routine is unfinished in the morning, it's the first thing on the list.
   const routineFirst = routineOpen && hour < MORNING_UNTIL_HOUR;
@@ -29,12 +31,12 @@ export function TodaySummaryList({ data }: { data: TodayDashboard }) {
         Today at a glance
       </h2>
       <ul className={styles.list}>
-        {routineFirst && routineRow}
+        {showRoutine && routineFirst && routineRow}
         <HabitsRow data={data} />
         <TasksRow data={data} />
         <WorkoutRow data={data} />
         <GoalRow data={data} />
-        {!routineFirst && routineRow}
+        {showRoutine && !routineFirst && routineRow}
       </ul>
     </section>
   );

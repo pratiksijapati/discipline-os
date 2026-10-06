@@ -18,6 +18,7 @@ from tasks.models import Task
 from users.models import UserSettings
 from workouts.models import WorkoutSession
 
+from . import scoring
 from .models import DailyScore
 from .scoring import LABELS, rating_for
 
@@ -224,6 +225,8 @@ def weekly_review(user, today: date, offset_weeks: int = 0) -> dict:
         "week_end": end.isoformat(),
         "is_current": start <= today <= end,
         "days_scored": len(scored),
+        # Days switched to a Minimum Day, so a quieter week reads as what it was.
+        "minimum_days": sum(1 for r in all_rows if scoring.is_minimum_day(r.breakdown)),
         "score": {
             "average": round(sum(r.score for r in scored) / len(scored)) if scored else None,
             "rating": rating_for(round(sum(r.score for r in scored) / len(scored))) if scored else None,

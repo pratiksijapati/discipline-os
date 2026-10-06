@@ -4,13 +4,23 @@ from django.db import transaction
 from rest_framework import serializers, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from core.mixins import OwnedQuerysetMixin
 from core.time import user_now, user_today
 
-from .models import Routine, RoutineItem, ScheduleItem, ScheduleTemplate
-from .routines import default_routine, make_default, progress_for_day, set_item_done
+from .models import MinimumDay, Routine, RoutineItem, ScheduleItem, ScheduleTemplate
+from .routines import (
+    default_routine,
+    make_default,
+    minimum_day_state,
+    progress_for_day,
+    set_item_done,
+    set_minimum_checklist,
+)
 from .serializers import (
+    MinimumChecklistSerializer,
+    MinimumDayStartSerializer,
     ItemOrderSerializer,
     RoutineCheckSerializer,
     RoutineItemSerializer,
@@ -97,13 +107,14 @@ class RoutineViewSet(OwnedQuerysetMixin, viewsets.ModelViewSet):
       POST /api/routines/{id}/reorder/          {item_ids: [...]}
     """
 
-    queryset = Routine.objects.prefetch_related("items")
+    # Morning routines only; the Minimum Day checklist lives under /api/minimum-day/.
+    queryset = Routine.objects.filter(kind=Routine.Kind.MORNING).prefetch_related("items")
     serializer_class = RoutineSerializer
     pagination_class = None
 
     def perform_create(self, serializer):
         wants_default = serializer.validated_data.get("is_default", False)
-        is_first = not Routine.objects.filter(user=self.request.user).exists()
+        is_first = not Routine.objects.filter(user=self.request.user, kind=Routine.Kind.MORNING).exists()
         routine = serializer.save(user=self.request.user)
         if wants_default or is_first:
             make_default(routine)
@@ -166,3 +177,38 @@ class RoutineItemViewSet(OwnedQuerysetMixin, viewsets.ModelViewSet):
         today = user_today(request.user)
         set_item_done(item, payload.validated_data.get("date", today), payload.validated_data["done"])
         return Response(progress_for_day(item.routine, payload.validated_data.get("date", today)))
+
+
+class MinimumDayView(APIView):
+    """
+    GET    /api/minimum-day/              today's state + the checklist
+    POST   /api/minimum-day/              {reason?} — today is a Minimum Day
+    DELETE /api/minimum-day/              back to a normal day
+    PUT    /api/minimum-day/checklist/    {items: ["Drink water", ...]} — set the checklist
+    """
+
+    def get(self, request):
+        return Response(minimum_day_state(request.user, user_today(request.user)))
+
+    def post(self, request):
+        payload = MinimumDayStartSerializer(data=request.data)
+        payload.is_valid(raise_exception=True)
+        today = user_today(request.user)
+        if not minimum_day_state(request.user, today)["configured"]:
+            raise serializers.ValidationError({"checklist": ["Add at least one step to your minimum day first."]})
+        MinimumDay.objects.update_or_create(user=request.user, date=today, defaults={"reason": payload.validated_data.get("reason", "")})
+        return Response(minimum_day_state(request.user, today))
+
+    def delete(self, request):
+        today = user_today(request.user)
+        MinimumDay.objects.filter(user=request.user, date=today).delete()
+        return Response(minimum_day_state(request.user, today))
+
+
+class MinimumChecklistView(APIView):
+    def put(self, request):
+        payload = MinimumChecklistSerializer(data=request.data)
+        payload.is_valid(raise_exception=True)
+        set_minimum_checklist(request.user, payload.validated_data["items"])
+        return Response(minimum_day_state(request.user, user_today(request.user)))
+

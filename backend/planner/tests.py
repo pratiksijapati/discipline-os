@@ -240,3 +240,44 @@ class RoutineApiTests(AuthedAPITestCase):
         self.assertEqual(self.client.post(reverse("routine-item-check", args=[foreign_item.id]), {"done": True}, format="json").status_code, 404)
         self.assertEqual(self.client.get(reverse("routine-detail", args=[foreign.id])).status_code, 404)
         self.assertIsNone(self.today()["routine"])
+
+
+class MinimumDayApiTests(AuthedAPITestCase):
+    def state(self):
+        return self.client.get(reverse("minimum-day")).data
+
+    def test_set_checklist_start_tick_and_stop(self):
+        with frozen_local_time(2026, 10, 5, 8):
+            self.assertFalse(self.state()["configured"])
+            res = self.client.post(reverse("minimum-day"), {"reason": "Travelling"}, format="json")
+            self.assertEqual(res.status_code, 400)
+            self.assertIn("checklist", res.data["errors"])
+
+            res = self.client.put(
+                reverse("minimum-checklist"), {"items": [" Drink water ", "10 push-ups", "drink water", ""]}, format="json"
+            )
+            self.assertEqual([i["title"] for i in res.data["checklist"]["items"]], ["Drink water", "10 push-ups"])
+
+            state = self.client.post(reverse("minimum-day"), {"reason": "Travelling"}, format="json").data
+            self.assertEqual((state["active"], state["reason"]), (True, "Travelling"))
+
+            step = state["checklist"]["items"][0]
+            self.client.post(reverse("routine-item-check", args=[step["id"]]), {"done": True}, format="json")
+            self.assertEqual(self.state()["checklist"]["completed"], 1)
+
+            # Editing keeps today's tick on an unchanged step.
+            self.client.put(reverse("minimum-checklist"), {"items": ["Drink water", "Read 5 minutes"]}, format="json")
+            self.assertEqual(self.state()["checklist"]["completed"], 1)
+
+            self.assertFalse(self.client.delete(reverse("minimum-day")).data["active"])
+
+    def test_minimum_checklist_is_never_the_morning_routine(self):
+        with frozen_local_time(2026, 10, 5, 8):
+            self.client.put(reverse("minimum-checklist"), {"items": ["Drink water"]}, format="json")
+            self.assertEqual(self.client.get(reverse("routine-list")).data, [])
+            self.assertIsNone(self.client.get(reverse("routine-today")).data["routine"])
+            # A first morning routine still becomes the default.
+            res = self.client.post(reverse("routine-list"), {"name": "Morning", "items": [{"title": "Shower"}]}, format="json")
+            self.assertTrue(res.data["is_default"])
+            self.assertEqual(self.client.get(reverse("routine-today")).data["routine"]["name"], "Morning")
+

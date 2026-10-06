@@ -137,17 +137,26 @@ class ScheduleItem(ScheduleFields):
 
 
 class Routine(TimeStampedModel):
-    """An ordered checklist, e.g. the morning routine. One routine is the default."""
+    """
+    An ordered checklist. "morning" routines are the morning routine (one is the default);
+    the single "minimum" routine is the short checklist used on a Minimum Day.
+    """
+
+    class Kind(models.TextChoices):
+        MORNING = "morning", "Morning routine"
+        MINIMUM = "minimum", "Minimum day"
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="routines")
     name = models.CharField(max_length=80)
+    kind = models.CharField(max_length=10, choices=Kind.choices, default=Kind.MORNING)
     is_default = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
     class Meta:
         ordering = ["-is_default", "id"]
         constraints = [
-            models.UniqueConstraint(fields=["user"], condition=Q(is_default=True), name="one_default_routine_per_user")
+            models.UniqueConstraint(fields=["user"], condition=Q(is_default=True), name="one_default_routine_per_user"),
+            models.UniqueConstraint(fields=["user"], condition=Q(kind="minimum"), name="one_minimum_checklist_per_user"),
         ]
 
     def __str__(self):
@@ -179,3 +188,23 @@ class RoutineLog(models.Model):
     class Meta:
         constraints = [models.UniqueConstraint(fields=["item", "date"], name="unique_routine_log_per_day")]
         indexes = [models.Index(fields=["user", "date"])]
+
+
+class MinimumDay(models.Model):
+    """
+    "Today I'm doing the minimum." On these days the short Minimum Day checklist stands in
+    for the morning routine. It is not a free pass: everything else still counts as usual.
+    """
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="minimum_days")
+    date = models.DateField()
+    reason = models.CharField(max_length=120, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-date"]
+        constraints = [models.UniqueConstraint(fields=["user", "date"], name="one_minimum_day_per_user_per_day")]
+
+    def __str__(self):
+        return f"{self.date} (minimum day)"
+

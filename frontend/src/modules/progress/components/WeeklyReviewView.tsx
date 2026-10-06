@@ -63,6 +63,11 @@ export function WeeklyReviewView() {
             "No scored days this week."
           )}
         </p>
+        {Boolean(data.minimum_days) && (
+          <p className={styles.heroSub}>
+            Includes {data.minimum_days} minimum day{data.minimum_days === 1 ? "" : "s"}
+          </p>
+        )}
       </section>
 
       <dl className={styles.grid}>

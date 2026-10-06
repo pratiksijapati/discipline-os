@@ -6,7 +6,7 @@ from django.urls import reverse
 from core.testing import AuthedAPITestCase, frozen_local_time
 from goals.models import Goal
 from habits.models import Habit
-from planner.models import Routine, RoutineItem
+from planner.models import MinimumDay, Routine, RoutineItem
 from tasks.models import DailyFocus, Task
 from workouts.models import Exercise, PlanExercise, WorkoutPlan
 
@@ -17,7 +17,9 @@ KTM = ZoneInfo("Asia/Kathmandu")
 MON = date(2026, 10, 5)
 
 
-class ScoringTests(AuthedAPITestCase):
+class ScoringCase(AuthedAPITestCase):
+    """Shared setup and helpers for score tests."""
+
     def setUp(self):
         super().setUp()
         # Account "created" a while ago so past days can be scored.
@@ -61,6 +63,8 @@ class ScoringTests(AuthedAPITestCase):
             self.client.post(reverse("habit-log", args=[Habit.objects.get().id]), {"value": 8}, format="json")
             self.client.post(reverse("goal-progress", args=[Goal.objects.get().id]), {"amount": "1.5"}, format="json")
 
+
+class ScoringTests(ScoringCase):
     def test_untracked_day_has_no_score(self):
         with frozen_local_time(2026, 10, 5, 9):
             data = self.score()
@@ -234,3 +238,59 @@ class ScoringTests(AuthedAPITestCase):
         self.assertIn("discipline", dash["streaks"])
         self.assertEqual([h["date"] for h in history][-1], "2026-10-05")
         self.assertTrue(all(h["is_final"] for h in history[:-1]))
+
+
+class MinimumDayScoringTests(ScoringCase):
+    def test_minimum_checklist_stands_in_for_the_routine_and_the_rest_still_counts(self):
+        self.setup_full_system()  # morning routine, Monday workout, task, habit, goal
+        self.client.put(reverse("minimum-checklist"), {"items": ["Drink water", "10 push-ups"]}, format="json")
+        with frozen_local_time(2026, 10, 5, 9):
+            self.client.post(reverse("minimum-day"), {}, format="json")
+            step = self.client.get(reverse("minimum-day")).data["checklist"]["items"][0]
+            self.client.post(reverse("routine-item-check", args=[step["id"]]), {"done": True}, format="json")
+            data = self.score()
+        parts = {c["key"]: c for c in data["breakdown"]}
+        routine = parts["morning_routine"]
+        self.assertEqual((routine["ratio"], routine["detail"], routine["weight"]), (0.5, "1/2 minimum-day steps", 10))
+        self.assertTrue(routine["minimum_day"])
+        self.assertTrue(data["minimum_day"])
+        # Not a free pass: the planned workout still applies and still counts as not done.
+        self.assertTrue(parts["workout"]["applicable"])
+        self.assertEqual(parts["workout"]["ratio"], 0)
+
+
+def _row(user, day, score, minimum_done=None):
+    breakdown = [{"key": "morning_routine", "applicable": True, "weight": 10, "ratio": 1.0 if minimum_done else 0.4}]
+    if minimum_done is not None:
+        breakdown[0]["minimum_day"] = True
+    return DailyScore(user=user, date=day, score=score, breakdown=breakdown, is_final=True)
+
+
+class MinimumDayStreakTests(ScoringCase):
+    def streak(self, rows, today_row):
+        from .engine import streaks
+
+        DailyScore.objects.bulk_create(rows)
+        return streaks(self.user, today_row.date, today_row)["discipline"]["current"]
+
+    def test_a_completed_minimum_day_holds_the_streak(self):
+        d = lambda n: date(2026, 10, n)  # noqa: E731
+        rows = [_row(self.user, d(1), 80), _row(self.user, d(2), 80), _row(self.user, d(3), 40, minimum_done=True), _row(self.user, d(4), 80)]
+        # 1, 2, (3 held: not counted, not broken), 4, 5
+        self.assertEqual(self.streak(rows, _row(self.user, d(5), 80)), 4)
+
+    def test_only_two_minimum_days_per_week_are_protected(self):
+        d = lambda n: date(2026, 10, n)  # noqa: E731  — weeks start on Sunday (Oct 4)
+        rows = [
+            _row(self.user, d(3), 80),
+            _row(self.user, d(4), 40, minimum_done=True),
+            _row(self.user, d(5), 40, minimum_done=True),
+            _row(self.user, d(6), 40, minimum_done=True),  # third this week: breaks
+        ]
+        self.assertEqual(self.streak(rows, _row(self.user, d(7), 80)), 1)
+
+    def test_an_unfinished_minimum_day_breaks_like_any_low_day(self):
+        d = lambda n: date(2026, 10, n)  # noqa: E731
+        rows = [_row(self.user, d(3), 80), _row(self.user, d(4), 40, minimum_done=False)]
+        self.assertEqual(self.streak(rows, _row(self.user, d(5), 80)), 1)
+

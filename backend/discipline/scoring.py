@@ -112,6 +112,10 @@ def _wake_up(user, day, snap: DaySnapshot, settings, tz) -> Part:
 
 
 def _morning_routine(snap: DaySnapshot) -> Part:
+    # On a Minimum Day the short checklist stands in for the morning routine, at the same weight.
+    if snap.minimum and snap.minimum["total"]:
+        done, total = snap.minimum["completed"], snap.minimum["total"]
+        return Part(True, done / total, f"{done}/{total} minimum-day steps")
     done, total = snap.routine["completed"], snap.routine["total"]
     if not total:
         return NOT_TRACKED
@@ -198,6 +202,7 @@ def compute(user, day: date, snap: DaySnapshot) -> tuple[int | None, list[dict]]
         "reflection": _reflection(user, day),
     }
 
+    is_minimum = bool(snap.minimum and snap.minimum["total"])
     breakdown = []
     for key, label, _ in COMPONENTS:
         part, weight = parts[key], weights[key]
@@ -212,6 +217,8 @@ def compute(user, day: date, snap: DaySnapshot) -> tuple[int | None, list[dict]]
                 "points": round(weight * part.ratio, 1) if applicable else 0,
                 "max_ratio": round(max(part.ratio, part.max_ratio), 3) if applicable else 0,
                 "detail": part.detail,
+                # Marks a Minimum Day (on the part it changes), for streaks and history.
+                **({"minimum_day": True, "label": "Minimum day checklist"} if key == "morning_routine" and is_minimum else {}),
             }
         )
 
@@ -233,3 +240,12 @@ def max_possible(score: int | None, breakdown: list[dict], is_final: bool) -> in
     # Rows saved before max_ratio existed: assume everything is still possible.
     reachable = sum(c["weight"] * c.get("max_ratio", 1.0) for c in applicable)
     return max(score, round(100 * reachable / total)) if total else score
+
+
+def is_minimum_day(breakdown: list[dict]) -> bool:
+    return any(c.get("minimum_day") for c in breakdown)
+
+
+def minimum_checklist_done(breakdown: list[dict]) -> bool:
+    return any(c.get("minimum_day") and c["ratio"] >= 0.999 for c in breakdown)
+

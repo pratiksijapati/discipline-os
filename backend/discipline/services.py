@@ -10,7 +10,7 @@ from datetime import date, datetime, time
 from core.time import user_now
 from habits.services import build_cards
 from planner.models import ScheduleItem
-from planner.routines import default_routine, progress_for_day
+from planner.routines import default_routine, minimum_day_progress, progress_for_day
 from planner.services import ensure_occurrences
 from planner.status import MISSED, display_status, is_happening_now
 from tasks.models import DailyFocus, Task
@@ -29,6 +29,8 @@ class DaySnapshot:
     routine: dict
     # Today's one most important thing, if the user set one.
     focus: DailyFocus | None
+    # The Minimum Day checklist's progress when this is a Minimum Day, else None.
+    minimum: dict | None
     summary: dict
 
 
@@ -102,6 +104,7 @@ def build_day(user, day: date, now_time: time) -> DaySnapshot:
         habit_cards=habit_cards,
         routine=routine,
         focus=focus,
+        minimum=minimum_day_progress(user, day),
         summary=_summarize(items, tasks, habit_cards, routine, day, now_time, workout_done, focus),
     )
 

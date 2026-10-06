@@ -81,6 +81,33 @@ def _streak(states: dict[date, bool | None], today: date) -> dict:
     return {"current": current, "best": max(best, current)}
 
 
+MINIMUM_DAYS_PROTECTED_PER_WEEK = 2
+
+
+def _discipline_states(rows, settings) -> dict[date, bool | None]:
+    """
+    A day at/above the threshold extends the streak; below it breaks it.
+    A Minimum Day with its whole checklist done *holds* the streak (counts as neither),
+    at most twice per week, so hard days don't erase weeks of work.
+    """
+    states: dict[date, bool | None] = {}
+    protected_per_week: dict[date, int] = {}
+    for row in sorted(rows, key=lambda r: r.date):
+        if row.score is None:
+            states[row.date] = None
+            continue
+        if row.score >= settings.streak_threshold:
+            states[row.date] = True
+            continue
+        week = row.date - timedelta(days=(row.date.weekday() - settings.week_start) % 7)
+        if scoring.minimum_checklist_done(row.breakdown) and protected_per_week.get(week, 0) < MINIMUM_DAYS_PROTECTED_PER_WEEK:
+            protected_per_week[week] = protected_per_week.get(week, 0) + 1
+            states[row.date] = None
+        else:
+            states[row.date] = False
+    return states
+
+
 def streaks(user, today: date, today_score: DailyScore) -> dict:
     settings = UserSettings.for_user(user)
     rows = list(DailyScore.objects.filter(user=user, date__gte=today - timedelta(days=HISTORY_DAYS), date__lt=today))
@@ -92,7 +119,7 @@ def streaks(user, today: date, today_score: DailyScore) -> dict:
             return None
         return comp["ratio"] >= (0.999 if full_only else 0.5)
 
-    discipline = {r.date: (None if r.score is None else r.score >= settings.streak_threshold) for r in rows}
+    discipline = _discipline_states(rows, settings)
     wake = {r.date: component_state(r, "wake_up") for r in rows}
     habits = {r.date: component_state(r, "habits") for r in rows}
     workouts = workout_stats(user, today)
@@ -114,5 +141,6 @@ def score_payload(user, score: DailyScore) -> dict:
         "target": settings.daily_target_score,
         "is_final": score.is_final,
         "max_possible": scoring.max_possible(score.score, score.breakdown, score.is_final),
+        "minimum_day": scoring.is_minimum_day(score.breakdown),
         "breakdown": score.breakdown,
     }

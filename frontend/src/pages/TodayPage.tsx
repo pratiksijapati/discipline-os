@@ -12,6 +12,7 @@ import { Sheet } from "../components/ui/Sheet";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { ScoreChip } from "../modules/discipline/components/ScoreChip";
 import { FocusCard } from "../modules/focus/components/FocusCard";
+import { MinimumDay } from "../modules/minimum/components/MinimumDay";
 import { ScheduleItemDetails, type ItemDetailsView } from "../modules/schedule/components/ScheduleItemDetails";
 import { useSetItemStatus } from "../modules/schedule/hooks";
 import type { ScheduleItem } from "../modules/schedule/types";
@@ -63,6 +64,8 @@ export function TodayPage() {
 
         <FocusCard focus={data.focus} />
 
+        {data.minimum_day?.active && <MinimumDay state={data.minimum_day} />}
+
         <ReviewCard data={data} />
 
         <section aria-labelledby="plan-heading">
@@ -84,6 +87,8 @@ export function TodayPage() {
         </section>
 
         <TodaySummaryList data={data} />
+
+        {data.minimum_day && !data.minimum_day.active && <MinimumDay state={data.minimum_day} />}
       </div>
 
       <Fab label="Add something" onClick={() => setAdding(true)} />
