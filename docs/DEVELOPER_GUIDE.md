@@ -190,7 +190,7 @@ npm run dev                          # http://localhost:5173
 | `npm run build` | Type-check (`tsc -b`) then production build to `dist/` |
 | `npm run preview` | Serve the built `dist/` (service worker active) |
 | `npm run lint` | oxlint |
-| `npm run dev:alt` / `pwa:alt` | Same on ports 5174 / 4174 using `.env.claude` (to run beside another project) |
+| `npm run dev:alt` / `pwa:alt` | Same on ports 5174 / 4174 using `.env.alt` (to run beside another project) |
 
 > **PowerShell note:** `npm run x -- --flag` loses the `--`; use the `*:alt` scripts instead.
 

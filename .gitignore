@@ -23,5 +23,3 @@ frontend/dev-dist/
 Thumbs.db
 .DS_Store
 
-# ---------- Claude Code local test config ----------
-.claude/
