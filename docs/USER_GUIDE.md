@@ -56,7 +56,7 @@ When a new version is available you'll see **"Update available"** — tap it to 
 
 ### First 10 minutes — recommended setup
 
-1. **My Day → Routine**: add the things you do most days (wake up, workout, study, dinner, review)
+1. **My Day → Repeating**: add the things you do most days (wake up, workout, study, dinner, review)
    with their times and how often they repeat. Every matching day fills itself from now on.
 2. **Morning routine**: list the small steps of your morning (drink water, make bed…).
 3. **Habits**: tap a few starter habits or create your own.
@@ -82,6 +82,19 @@ On a phone, the bar at the bottom has:
 
 On a laptop, all of these are listed in the sidebar on the left.
 
+### What goes where?
+
+| Add a… | When it's… | Example |
+|---|---|---|
+| **Schedule** item | something happening at a specific time | Workout at 6:30 AM |
+| **Repeating** item | a schedule item that comes back on set days | Workout every Monday at 6:30 AM |
+| **Task** | something to get done, with no fixed time | Submit report |
+| **Morning routine** step | a small action to start the day | Drink water |
+| **Habit** | something you repeat and track | Read 20 minutes |
+| **Goal** | a bigger result over weeks or months | Read 10 books |
+
+Not sure? Tap **+** on Today — Quick Add explains each one before you choose.
+
 ---
 
 ## 3. Today
@@ -99,13 +112,13 @@ Today is the home screen. From top to bottom:
 - **Workout** — start today's planned workout, resume one in progress, or see the finished one.
 - **Morning routine** checklist.
 - **Habits** due today.
-- **Tasks** due today. The **+** button adds a new task.
+- The **+** button opens **Quick Add**: choose Schedule, Task, Habit or Goal.
 
 ---
 
 ## 4. My Day — your schedule
 
-My Day has four views: **Today**, **Tomorrow**, **Week** and **Routine**.
+My Day has four views: **Today**, **Tomorrow**, **Week** and **Repeating**.
 
 ### Items and their status
 
@@ -122,9 +135,9 @@ Night) and a priority (Low, Medium, High, Critical). Its status is one of:
 
 Tap an item to start it, mark it done, skip it, change it, or **Remove from this day**.
 
-### Repeating items (Routine view)
+### Repeating items (Repeating view)
 
-In **Routine**, add things that repeat:
+In **Repeating**, add things that repeat:
 
 - **Every day**, **Weekdays (Mon–Fri)**, **Weekends (Sat–Sun)**, **Selected days**, or
   **Weekly (same weekday)**
@@ -132,7 +145,7 @@ In **Routine**, add things that repeat:
 - An optional **Reminder** (at start time or some minutes before)
 
 Each repeating item appears automatically on every matching day.
-Changing or removing it on **one day** only affects that day; editing it in **Routine** changes
+Changing or removing it on **one day** only affects that day; editing it in **Repeating** changes
 all future days.
 
 For something that happens once, choose **Doesn't repeat**.

@@ -13,6 +13,7 @@ import { TASK_CATEGORY_OPTIONS } from "../constants";
 import { useCreateTask, useDeleteTask, useUpdateTask } from "../hooks";
 import type { Task, TaskCategory } from "../types";
 import styles from "./TaskForm.module.css";
+import { kindHint } from "../../quickadd/kinds";
 
 interface TaskFormProps {
   /** Edit this task, or create a new one when omitted. */
@@ -86,6 +87,7 @@ export function TaskForm({ task, defaultDueDate = "", onDone }: TaskFormProps) {
       <TextField
         label="Task"
         placeholder="What needs doing?"
+        hint={task ? undefined : kindHint("task")}
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         error={errors.title}

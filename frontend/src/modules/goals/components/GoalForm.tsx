@@ -11,6 +11,7 @@ import { GOAL_CATEGORY_OPTIONS, MEASURE_OPTIONS } from "../constants";
 import { useSaveGoal } from "../hooks";
 import type { Goal, GoalCategory, GoalMeasure } from "../types";
 import styles from "./Goals.module.css";
+import { kindHint } from "../../quickadd/kinds";
 
 const UNIT_PLACEHOLDER: Partial<Record<GoalMeasure, string>> = {
   count: "e.g. books, workouts",
@@ -74,6 +75,7 @@ export function GoalForm({ goal, onDone }: { goal?: Goal; onDone: (saved: Goal) 
       <TextField
         label="Goal"
         placeholder="e.g. Learn React"
+        hint={goal ? undefined : kindHint("goal")}
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         error={errors.title}

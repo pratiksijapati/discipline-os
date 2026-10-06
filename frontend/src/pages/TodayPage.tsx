@@ -15,7 +15,7 @@ import { FocusCard } from "../modules/focus/components/FocusCard";
 import { ScheduleItemDetails, type ItemDetailsView } from "../modules/schedule/components/ScheduleItemDetails";
 import { useSetItemStatus } from "../modules/schedule/hooks";
 import type { ScheduleItem } from "../modules/schedule/types";
-import { TaskForm } from "../modules/tasks/components/TaskForm";
+import { QuickAddSheet } from "../modules/quickadd/components/QuickAddSheet";
 import { DayTimeline } from "../modules/today/components/DayTimeline";
 import { NowNext } from "../modules/today/components/NowNext";
 import { ReviewCard } from "../modules/today/components/ReviewCard";
@@ -37,7 +37,7 @@ export function TodayPage() {
 
   const [opened, setOpened] = useState<{ item: ScheduleItem; view: ItemDetailsView } | null>(null);
   const openItem = (item: ScheduleItem) => setOpened({ item, view: "actions" });
-  const [addingTask, setAddingTask] = useState(false);
+  const [adding, setAdding] = useState(false);
 
   const title = `${greeting(user.timezone)}, ${user.first_name}`;
   const eyebrow = formatLongDate(user.timezone);
@@ -86,7 +86,7 @@ export function TodayPage() {
         <TodaySummaryList data={data} />
       </div>
 
-      <Fab label="Add task" onClick={() => setAddingTask(true)} />
+      <Fab label="Add something" onClick={() => setAdding(true)} />
 
       <Sheet open={opened !== null} onClose={() => setOpened(null)} title={opened?.item.title ?? ""}>
         {opened && (
@@ -100,9 +100,7 @@ export function TodayPage() {
         )}
       </Sheet>
 
-      <Sheet open={addingTask} onClose={() => setAddingTask(false)} title="New task">
-        <TaskForm defaultDueDate={data.date} onDone={() => setAddingTask(false)} />
-      </Sheet>
+      <QuickAddSheet open={adding} onClose={() => setAdding(false)} date={data.date} weekStart={user.settings.week_start} />
     </>
   );
 }

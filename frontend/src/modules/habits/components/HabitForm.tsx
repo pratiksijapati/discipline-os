@@ -14,6 +14,7 @@ import { FREQUENCY_OPTIONS, HABIT_CATEGORY_OPTIONS, HABIT_TYPE_OPTIONS } from ".
 import { useCreateHabit, useDeleteHabit, useUpdateHabit } from "../hooks";
 import type { Habit, HabitCategory, HabitFrequency, HabitType } from "../types";
 import styles from "./HabitForm.module.css";
+import { kindHint } from "../../quickadd/kinds";
 
 const WEEKLY_OPTIONS = [1, 2, 3, 4, 5, 6, 7].map((n) => ({ value: String(n), label: `${n}× per week` }));
 
@@ -114,6 +115,7 @@ export function HabitForm({ habit, weekStart, onDone }: HabitFormProps) {
       <TextField
         label="Habit"
         placeholder="e.g. Drink water"
+        hint={habit ? undefined : kindHint("habit")}
         value={name}
         onChange={(e) => setName(e.target.value)}
         error={errors.name}

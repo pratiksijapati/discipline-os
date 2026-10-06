@@ -59,7 +59,7 @@ export function HabitsPage() {
 
   return (
     <>
-      <PageHeader title="Habits" />
+      <PageHeader title="Habits" subtitle="Things you repeat and track." />
       <div className={styles.tabs}>
         <SegmentedControl legend="Habits view" value={view} options={VIEW_OPTIONS} onChange={setView} />
       </div>

@@ -34,7 +34,7 @@ export function RoutinePage() {
 
   return (
     <>
-      <PageHeader title="Morning routine" subtitle="The same steps every morning, so you don't have to think." />
+      <PageHeader title="Morning routine" subtitle="Small steps that start your day — the same every morning." />
       {isLoading ? (
         <PageLoader />
       ) : error || !data ? (

@@ -45,7 +45,7 @@ export function TasksPage() {
 
   return (
     <>
-      <PageHeader title="Tasks" />
+      <PageHeader title="Tasks" subtitle="Things to get done — no fixed time." />
       <div className={styles.tabs}>
         <SegmentedControl legend="Task list" value={view} options={TASK_VIEW_OPTIONS} onChange={setView} />
       </div>

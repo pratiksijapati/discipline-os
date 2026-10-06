@@ -14,6 +14,7 @@ import { useCreateScheduleItem, useCreateTemplate, useUpdateScheduleItem, useUpd
 import type { RepeatChoice, ScheduleCategory, ScheduleItem, ScheduleTemplate } from "../types";
 import { DayPicker } from "../../../components/ui/DayPicker";
 import styles from "./ScheduleForm.module.css";
+import { kindHint } from "../../quickadd/kinds";
 
 export type ScheduleFormMode =
   | { kind: "create"; date: string }
@@ -141,10 +142,10 @@ export function ScheduleForm({ mode, weekStart, onSaved }: ScheduleFormProps) {
         toast("Saved ✓");
       } else if (mode.kind === "template") {
         await updateTemplate.mutateAsync({ id: mode.template.id, input: { ...base, ...rule } });
-        toast("Routine updated ✓");
+        toast("Repeating item updated ✓");
       } else if (isRecurring) {
         await createTemplate.mutateAsync({ ...base, ...rule });
-        toast("Added to your routine ✓");
+        toast("Added to your repeating plan ✓");
       } else {
         await createItem.mutateAsync({ ...base, date: values.date });
         toast("Added to schedule ✓");
@@ -163,6 +164,7 @@ export function ScheduleForm({ mode, weekStart, onSaved }: ScheduleFormProps) {
       <TextField
         label="What"
         placeholder="e.g. Workout"
+        hint={mode.kind === "create" ? kindHint("schedule") : undefined}
         value={values.title}
         onChange={(e) => set("title", e.target.value)}
         error={errors.title}
@@ -245,7 +247,7 @@ export function ScheduleForm({ mode, weekStart, onSaved }: ScheduleFormProps) {
       )}
 
       <Button type="submit" size="lg" block loading={saving}>
-        {mode.kind === "create" ? (isRecurring ? "Add to routine" : "Add to schedule") : "Save changes"}
+        {mode.kind === "create" ? (isRecurring ? "Add repeating item" : "Add to schedule") : "Save changes"}
       </Button>
     </form>
   );

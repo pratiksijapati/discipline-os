@@ -26,7 +26,7 @@ const VIEW_OPTIONS: Array<{ value: View; label: string }> = [
   { value: "today", label: "Today" },
   { value: "tomorrow", label: "Tomorrow" },
   { value: "week", label: "Week" },
-  { value: "routine", label: "Routine" },
+  { value: "routine", label: "Repeating" },
 ];
 
 type SheetState = { kind: "item"; item: ScheduleItem } | Exclude<ScheduleFormMode, { kind: "item" }> | null;
@@ -68,7 +68,7 @@ export function SchedulePage() {
         <EmptyState
           icon={CalendarPlus}
           title={view === "today" ? "Nothing planned today" : "Nothing planned tomorrow"}
-          description="Add a one-off item, or build your routine so every day fills itself."
+          description="Add a one-off item, or set up repeating items so every day fills itself."
           action={<Button onClick={() => setSheet({ kind: "create", date: addDate })}>Add to schedule</Button>}
         />
       );
@@ -98,12 +98,12 @@ export function SchedulePage() {
     sheet?.kind === "item"
       ? sheet.item.title
       : sheet?.kind === "template"
-        ? "Edit routine item"
+        ? "Edit repeating item"
         : "Add to schedule";
 
   return (
     <>
-      <PageHeader title="My Day" subtitle="Your timeline and the routine that fills it." />
+      <PageHeader title="My Day" subtitle="Your timeline, and the repeating plan that fills it." />
       <div className={styles.tabs}>
         <SegmentedControl legend="Schedule view" value={view} options={VIEW_OPTIONS} onChange={setView} />
       </div>

@@ -19,7 +19,7 @@ interface TemplateListProps {
   onAdd: () => void;
 }
 
-/** Your recurring routine: the rules that fill each day automatically. */
+/** Your repeating plan: the rules that fill each day automatically. */
 export function TemplateList({ onEdit, onAdd }: TemplateListProps) {
   const weekStart = useCurrentUser().settings.week_start;
   const { data, isLoading, error, refetch } = useTemplates();
@@ -34,9 +34,9 @@ export function TemplateList({ onEdit, onAdd }: TemplateListProps) {
     return (
       <EmptyState
         icon={Repeat}
-        title="No routine yet"
+        title="No repeating items yet"
         description="Add the things you do regularly — wake up, workout, study — and they'll appear on every matching day."
-        action={<Button onClick={onAdd}>Add a routine item</Button>}
+        action={<Button onClick={onAdd}>Add a repeating item</Button>}
       />
     );
   }
@@ -45,7 +45,7 @@ export function TemplateList({ onEdit, onAdd }: TemplateListProps) {
     if (!toDelete) return;
     try {
       await remove.mutateAsync(toDelete.id);
-      toast("Removed from routine");
+      toast("Removed from your repeating plan");
       setToDelete(null);
     } catch (err) {
       toast(toApiError(err).message, "error");

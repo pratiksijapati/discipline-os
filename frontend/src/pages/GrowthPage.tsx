@@ -128,7 +128,7 @@ export function GrowthPage() {
 
   return (
     <>
-      <PageHeader title="Goals" subtitle="What you're growing toward." />
+      <PageHeader title="Goals" subtitle="Bigger results you work toward over time." />
       <div className={pageStyles.tabs}>
         <SegmentedControl legend="Goal list" value={tab} options={TABS} onChange={setTab} />
       </div>
